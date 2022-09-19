@@ -1,3 +1,5 @@
+ACLARACION: AL CORRER LAS PREUABS COMBATIENTES TEST TODAS JUNTAS FALLAN PERO AL CORRERLAS INDIVIDUALMENTE PASAN. LO MIRAMOS CON SERGIO Y NO SUPIMOS ENCONTRAR EL PROBLEMA. 
+
 Preguntas
 
 1. ¿Qué crítica le harías al protocolo de #estaHerido y #noEstaHerido? (en vez de tener solo el mensaje #estaHerido y hacer “#estaHerido not” para saber la negación)
