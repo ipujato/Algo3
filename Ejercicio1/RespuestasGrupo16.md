@@ -48,3 +48,6 @@ El segundo mensaje es:
    (unBooleano = true). De este modo se pueden comparar ambos escenarios (bando1 vivo y bando1 muerto) usando el mismo mensaje pero cambiando el valor de unBooleano.
 
 Los dos mensajes mencionados devuelven un booleano por lo que en total quedan tres booleanos, haciendo correcto uso de sobrevivientesBandoElegido y hizoCantidadDeRondas se pueden obtener las condiciones buscadas y si son cumplidas o no. Para el resultado final de ganadorBando1 ganadorBando2 o ganadorIndefinido se busca que los 3 resultados devuelvan true.
+
+
+A su vez, elegimos utilizar estos tres mensajes (uno para cada posibilidad) porque es la forma en que mas le delegamos al objeto. Al usar estos dos mensajes nostros no nos preocupamos por quien es cada bando, tan solo le preguntamos ¿gano 1? y el objeto responde con lo que tiene y sabe.
