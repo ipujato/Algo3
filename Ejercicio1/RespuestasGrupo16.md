@@ -52,4 +52,4 @@ El segundo mensaje es:
 Los dos mensajes mencionados devuelven un booleano por lo que en total quedan tres booleanos, haciendo correcto uso de sobrevivientesBandoElegido y hizoCantidadDeRondas se pueden obtener las condiciones buscadas y si son cumplidas o no. Para el resultado final de ganadorBando1 ganadorBando2 o ganadorIndefinido se busca que los 3 resultados devuelvan true.
 
 
-A su vez, elegimos utilizar estos tres mensajes (uno para cada posibilidad) porque es la forma en que más le delegamos al objeto. Al usar estos dos mensajes nosotros no nos preocupamos por quién es cada bando, tan solo le preguntamos si ganó uno y el objeto responde con lo que tiene y sabe.
+A su vez, elegimos utilizar estos tres mensajes (uno para cada posibilidad) porque es la forma en que más le delegamos al objeto. Al usar estos dos mensajes nosotros no nos preocupamos por quién es cada bando, tan solo le preguntamos si ganó uno y el objeto responde con lo que sabe. Elegimos priorizar no romper el encapsulamiento por encima de todo. 
