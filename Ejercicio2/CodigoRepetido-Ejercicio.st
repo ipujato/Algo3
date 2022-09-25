@@ -21,6 +21,13 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
+!CustomerBookTest methodsFor: 'testingTools' stamp: 'ip 9/25/2022 19:27:30'!
+checkAmountOfActive: expectedActiveAmount andSuspended: expectedSuspendedAmount andHasPaul: aClosure inBook: aCustomerBook
+	self assert: expectedActiveAmount equals: aCustomerBook numberOfActiveCustomers.
+	self assert: expectedSuspendedAmount equals: aCustomerBook numberOfSuspendedCustomers.
+	self assert: expectedActiveAmount + expectedSuspendedAmount equals: aCustomerBook numberOfCustomers.
+	aClosure value.! !
+
 !CustomerBookTest methodsFor: 'testingTools' stamp: 'ip 9/25/2022 18:46:04'!
 expectedError: anErrorSignal withMessage: aMessage testingCondition: aTestClosure
 	[ aMessage value. 
@@ -80,19 +87,14 @@ test04CanNotRemoveAnInvalidCustomer
 				andCustomerInclusion: 			johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ip 9/25/2022 19:16:56'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ip 9/25/2022 19:28:11'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney |
 	
 	paulMcCartney := 'Paul McCartney'.
 	customerBook := CustomerBook initializeWithSuspension: paulMcCartney.
-	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 1 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 1 equals: customerBook numberOfCustomers.
-	self assert: (customerBook includesCustomerNamed: paulMcCartney).
-	
+	self checkAmountOfActive: 0 andSuspended: 1 andHasPaul: [self assert: (customerBook includesCustomerNamed: paulMcCartney)] inBook: customerBook.
 
 	
 ! !
