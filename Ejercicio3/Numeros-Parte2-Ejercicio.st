@@ -364,27 +364,27 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numeros-Parte2-Ejercicio'!
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:32:01'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:38:11'!
 * aMultiplier 
 	(aMultiplier isKindOf: Fraccion) ifTrue: [^self integerFractionMultiplication: aMultiplier ].
-	^self class with: value * aMultiplier integerValue
+	(aMultiplier isKindOf: Entero) ifTrue: [^self class with: value * aMultiplier integerValue].
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:09:36'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:37:10'!
 + anAdder 
 	(anAdder isKindOf: Fraccion ) ifTrue: [^self integerPlusAFraction: anAdder ].
-	^self class with: value + anAdder integerValue
+	(anAdder isKindOf: Entero ) ifTrue: [^self class with: value + anAdder integerValue].
 ! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:59:10'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:38:44'!
 - aSubtrahend 
 	(aSubtrahend isKindOf: Fraccion ) ifTrue: [^self + (Fraccion with: aSubtrahend numerator *(Entero with: -1) over: aSubtrahend denominator)].
-	^ self class with: value - aSubtrahend integerValue.! !
+	(aSubtrahend isKindOf: Entero) ifTrue: [^ self class with: value - aSubtrahend integerValue].! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:36:58'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:38:55'!
 / aDivisor 
 	(aDivisor isKindOf: Fraccion ) ifTrue: [^self integerDividedByFraction: aDivisor ].
-	^Fraccion with: self over: aDivisor! !
+	(aDivisor isKindOf: Entero) ifTrue: [^Fraccion with: self over: aDivisor].! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
 fibonacci
@@ -502,37 +502,39 @@ Numero subclass: #Fraccion
 	poolDictionaries: ''
 	category: 'Numeros-Parte2-Ejercicio'!
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:33:43'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:43:17'!
 * aMultiplier 
 	(aMultiplier isKindOf: Entero) ifTrue: [^aMultiplier * self].
-	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
+	(aMultiplier isKindOf: Fraccion ) ifTrue: [^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)].
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:27:39'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:39:53'!
 + anAdder 
 	
 	| newNumerator newDenominator |
 	(anAdder isKindOf: Entero) ifTrue: [^anAdder + self].
-	newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-	newDenominator := denominator * anAdder denominator.
+	(anAdder isKindOf: Fraccion ) ifTrue: [
+		newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
+		newDenominator := denominator * anAdder denominator.
 	
-	^newNumerator / newDenominator ! !
+		^newNumerator / newDenominator ].! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:08:08'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:40:14'!
 - aSubtrahend 
 	
 	| newNumerator newDenominator |
 	(aSubtrahend isKindOf: Entero) ifTrue: [^(aSubtrahend - self)*(Entero with:-1)].
-	newNumerator := (numerator * aSubtrahend denominator) - (denominator * aSubtrahend numerator).
-	newDenominator := denominator * aSubtrahend denominator.
+	(aSubtrahend isKindOf: Fraccion ) ifTrue: [
+		newNumerator := (numerator * aSubtrahend denominator) - (denominator * aSubtrahend numerator).
+		newDenominator := denominator * aSubtrahend denominator.
 	
-	^newNumerator / newDenominator 
+		^newNumerator / newDenominator ].
 ! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:45:00'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:40:28'!
 / aDivisor 
 	(aDivisor isKindOf: Entero ) ifTrue: [^self fractionDividedByAnInteger: aDivisor].
-	^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)! !
+	(aDivisor isKindOf: Fraccion ) ifTrue: [^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)].! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:52:06'!
 fractionDividedByAnInteger: aDivisor
