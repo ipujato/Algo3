@@ -314,6 +314,16 @@ Object subclass: #Numero
 
 	self subclassResponsibility ! !
 
+!Numero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:51:05'!
+additionWithEntero: anAdder
+
+	self subclassResponsibility .! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:58:57'!
+additionWithFraccion: anAdder
+
+	self subclassResponsibility .! !
+
 !Numero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:37:13'!
 negated
 	
@@ -370,10 +380,10 @@ Numero subclass: #Entero
 	(aMultiplier isKindOf: Entero) ifTrue: [^self class with: value * aMultiplier integerValue].
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:37:10'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:48:12'!
 + anAdder 
-	(anAdder isKindOf: Fraccion ) ifTrue: [^self integerPlusAFraction: anAdder ].
-	(anAdder isKindOf: Entero ) ifTrue: [^self class with: value + anAdder integerValue].
+	
+	^anAdder additionWithEntero: self.
 ! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:38:44'!
@@ -381,10 +391,25 @@ Numero subclass: #Entero
 	(aSubtrahend isKindOf: Fraccion ) ifTrue: [^self + (Fraccion with: aSubtrahend numerator *(Entero with: -1) over: aSubtrahend denominator)].
 	(aSubtrahend isKindOf: Entero) ifTrue: [^ self class with: value - aSubtrahend integerValue].! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:38:55'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 19:07:10'!
 / aDivisor 
-	(aDivisor isKindOf: Fraccion ) ifTrue: [^self integerDividedByFraction: aDivisor ].
-	(aDivisor isKindOf: Entero) ifTrue: [^Fraccion with: self over: aDivisor].! !
+	
+	^aDivisor divisionWithEntero: self.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:44:31'!
+additionWithEntero: anAdder
+
+	^ self class with: value + anAdder integerValue.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:52:46'!
+additionWithFraccion: anAdder
+
+	^ self + anAdder.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 19:06:48'!
+divisionWithEntero: aDivisor
+
+	^Fraccion with: aDivisor over: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
 fibonacci
@@ -508,16 +533,10 @@ Numero subclass: #Fraccion
 	(aMultiplier isKindOf: Fraccion ) ifTrue: [^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)].
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:39:53'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:57:57'!
 + anAdder 
 	
-	| newNumerator newDenominator |
-	(anAdder isKindOf: Entero) ifTrue: [^anAdder + self].
-	(anAdder isKindOf: Fraccion ) ifTrue: [
-		newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-		newDenominator := denominator * anAdder denominator.
-	
-		^newNumerator / newDenominator ].! !
+	^anAdder additionWithFraccion: self.! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 19:40:14'!
 - aSubtrahend 
@@ -535,6 +554,25 @@ Numero subclass: #Fraccion
 / aDivisor 
 	(aDivisor isKindOf: Entero ) ifTrue: [^self fractionDividedByAnInteger: aDivisor].
 	(aDivisor isKindOf: Fraccion ) ifTrue: [^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)].! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:47:22'!
+additionWithEntero: anAdder
+
+	^ anAdder integerPlusAFraction: self.! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 18:57:18'!
+additionWithFraccion: anAdder
+
+	| newDenominator newNumerator |
+	newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
+	newDenominator := denominator * anAdder denominator.
+	
+	^newNumerator / newDenominator ! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'tgrr 9/30/2022 19:00:20'!
+divisionWithEntero: aDivisor.
+
+	^ aDivisor integerDividedByFraction: self. ! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'ip 9/29/2022 18:52:06'!
 fractionDividedByAnInteger: aDivisor
