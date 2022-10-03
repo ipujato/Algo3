@@ -5,6 +5,26 @@ TestCase subclass: #NumeroTest
 	poolDictionaries: ''
 	category: 'Numeros-Parte2-Ejercicio'!
 
+!NumeroTest methodsFor: 'tests' stamp: 'ip 10/3/2022 15:44:53'!
+setUp
+
+	zero := Entero with: 0.
+	one := Entero with: 1.
+	two := Entero with: 2.
+	three:= Entero with: 3.
+	four := Entero with: 4.
+	five := Entero with: 5.
+	eight := Entero with: 8.
+	negativeOne := Entero with: -1.
+	negativeTwo := Entero with: -2.
+	
+	oneHalf := one / two.
+	oneFifth := one / five.
+	twoFifth := two / five.
+	twoTwentyfifth := two / (Entero with: 25).
+	fiveHalfs := five / two.
+	! !
+
 !NumeroTest methodsFor: 'tests' stamp: 'LL 9/13/2020 16:17:50'!
 test01isZeroReturnsTrueWhenAskToZero
 
@@ -265,27 +285,6 @@ test42SignIsCorrectlyAssignedToFractionWithNegativeDivisor
 
 	self assert: oneHalf negated equals: (one / negativeTwo)! !
 
-
-!NumeroTest methodsFor: 'setup' stamp: 'NR 9/23/2018 23:46:28'!
-setUp
-
-	zero := Entero with: 0.
-	one := Entero with: 1.
-	two := Entero with: 2.
-	three:= Entero with: 3.
-	four := Entero with: 4.
-	five := Entero with: 5.
-	eight := Entero with: 8.
-	negativeOne := Entero with: -1.
-	negativeTwo := Entero with: -2.
-	
-	oneHalf := one / two.
-	oneFifth := one / five.
-	twoFifth := two / five.
-	twoTwentyfifth := two / (Entero with: 25).
-	fiveHalfs := five / two.
-	! !
-
 
 !classDefinition: #Numero category: 'Numeros-Parte2-Ejercicio'!
 Object subclass: #Numero
@@ -416,20 +415,6 @@ Numero subclass: #Entero
 
 	^aDivisor divisionWithEntero: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
-fibonacci
-
-	| one two |
-	
-	one := Entero with: 1.
-	two := Entero with: 2.
-	
-	self isNegative ifTrue: [self error: Entero negativeFibonacciErrorDescription ].	
-	(self isZero or: [self isOne]) ifTrue: [^one].
-	
-	^ (self - one) fibonacci + (self - two) fibonacci
-		! !
-
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
 = anObject
@@ -530,6 +515,21 @@ greatestCommonDivisorWith: anEntero
 	
 	^self class with: (value gcd: anEntero integerValue)! !
 
+
+!Entero methodsFor: 'fibonacci' stamp: 'ip 10/3/2022 15:30:53'!
+fibonacci
+
+	^ self fibonacciValue.
+	
+	! !
+
+!Entero methodsFor: 'fibonacci' stamp: 'ip 10/3/2022 14:39:28'!
+fibonacciValue
+
+	self subclassResponsibility.
+	
+	! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Entero class' category: 'Numeros-Parte2-Ejercicio'!
@@ -540,13 +540,117 @@ Entero class
 negativeFibonacciErrorDescription
 	^ ' Fibonacci no está definido aquí para Enteros Negativos'! !
 
-!Entero class methodsFor: 'instance creation' stamp: 'JS 5/5/2022 03:55:37'!
+!Entero class methodsFor: 'instance creation' stamp: 'ip 10/3/2022 15:48:15'!
 with: aValue 
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
+	^(Entero subclasses detect: [ :aSubclass | aSubclass enteroIsOfThisSubclass: aValue ] ifNone: [  self error: 'aValue debe ser anInteger' ]) new initializeWith: aValue.! !
+
+
+!Entero class methodsFor: 'private' stamp: 'ip 10/3/2022 15:34:33'!
+enteroIsOfThisSubclass: aValue
+
+	self subclassResponsibility .! !
+
+
+!classDefinition: #Cero category: 'Numeros-Parte2-Ejercicio'!
+Entero subclass: #Cero
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte2-Ejercicio'!
+
+!Cero methodsFor: 'fibonacci' stamp: 'ip 10/3/2022 14:39:28'!
+fibonacciValue
+
+	^Entero with: 1.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Cero class' category: 'Numeros-Parte2-Ejercicio'!
+Cero class
+	instanceVariableNames: ''!
+
+!Cero class methodsFor: 'private' stamp: 'ip 10/3/2022 15:32:31'!
+enteroIsOfThisSubclass: anEntero
+
+	^anEntero = 0.! !
+
+
+!classDefinition: #Negativos category: 'Numeros-Parte2-Ejercicio'!
+Entero subclass: #Negativos
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte2-Ejercicio'!
+
+!Negativos methodsFor: 'fibonacci' stamp: 'ip 10/3/2022 14:39:28'!
+fibonacciValue
+
+	^self error: Entero negativeFibonacciErrorDescription.
 	
-	^self new initializeWith: aValue! !
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Negativos class' category: 'Numeros-Parte2-Ejercicio'!
+Negativos class
+	instanceVariableNames: ''!
+
+!Negativos class methodsFor: 'private' stamp: 'ip 10/3/2022 15:32:36'!
+enteroIsOfThisSubclass: anEntero
+
+	^anEntero < 0.! !
+
+
+!classDefinition: #Positivos category: 'Numeros-Parte2-Ejercicio'!
+Entero subclass: #Positivos
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte2-Ejercicio'!
+
+!Positivos methodsFor: 'fibonacci' stamp: 'ip 10/3/2022 15:31:10'!
+fibonacciValue
+	| one two |
+	one := Entero with: 1.
+	two := Entero with: 2.
+	^(self - one) fibonacci + (self - two) fibonacci.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Positivos class' category: 'Numeros-Parte2-Ejercicio'!
+Positivos class
+	instanceVariableNames: ''!
+
+!Positivos class methodsFor: 'private' stamp: 'ip 10/3/2022 15:32:44'!
+enteroIsOfThisSubclass: anEntero
+
+	^anEntero value > 1.! !
+
+
+!classDefinition: #Uno category: 'Numeros-Parte2-Ejercicio'!
+Entero subclass: #Uno
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte2-Ejercicio'!
+
+!Uno methodsFor: 'fibonacci' stamp: 'ip 10/3/2022 15:18:10'!
+fibonacciValue
+
+	^Entero with: 1.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Uno class' category: 'Numeros-Parte2-Ejercicio'!
+Uno class
+	instanceVariableNames: ''!
+
+!Uno class methodsFor: 'private' stamp: 'ip 10/3/2022 15:32:40'!
+enteroIsOfThisSubclass: anEntero
+
+	^anEntero = 1.! !
 
 
 !classDefinition: #Fraccion category: 'Numeros-Parte2-Ejercicio'!
