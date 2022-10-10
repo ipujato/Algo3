@@ -159,24 +159,26 @@ size
 	^collection size.! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'ip 10/10/2022 15:41:42'!
-initialize
-	collection := Bag new.! !
-
-
-!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 15:49:12'!
+!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 16:22:53'!
 pop
-	^collection remove: self top ifAbsent: [^'Salio mal'].! !
+	(self isEmpty ) ifTrue: [^self error: 'Stack is empty' ].
+	^collection remove: self top ifAbsent: [^OOStack stackEmptyErrorDescription ].! !
 
 !OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 15:44:42'!
 push: anElementToBeStacked 
 	^collection add: anElementToBeStacked .! !
 
-!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 15:48:27'!
+!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 16:23:19'!
 top
 	| elementToCollect |
+	(self isEmpty ) ifTrue: [^self error: 'Stack is empty' ].
 	collection do:[ :anElementOnCollection | elementToCollect := anElementOnCollection]. 
 	^elementToCollect .! !
+
+
+!OOStack methodsFor: 'initialization' stamp: 'ip 10/10/2022 15:41:42'!
+initialize
+	collection := Bag new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -188,6 +190,46 @@ OOStack class
 stackEmptyErrorDescription
 	
 	^ 'Stack is empty'! !
+
+
+!classDefinition: #EmptyStack category: 'Stack-Exercise'!
+OOStack subclass: #EmptyStack
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!EmptyStack methodsFor: 'as yet unclassified' stamp: 'ip 10/10/2022 16:31:41'!
+initialization
+	collection := Bag new.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'EmptyStack class' category: 'Stack-Exercise'!
+EmptyStack class
+	instanceVariableNames: ''!
+
+!EmptyStack class methodsFor: 'as yet unclassified' stamp: 'ip 10/10/2022 16:36:29'!
+isThisTypeOfStack: sizeOfTheExpectedStack.
+	^sizeOfTheExpectedStack = 0.! !
+
+
+!classDefinition: #UsedStack category: 'Stack-Exercise'!
+OOStack subclass: #UsedStack
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'UsedStack class' category: 'Stack-Exercise'!
+UsedStack class
+	instanceVariableNames: ''!
+
+!UsedStack class methodsFor: 'as yet unclassified' stamp: 'ip 10/10/2022 16:37:11'!
+isThisTypeOfStack: sizeOfTheExpectedStack.
+	^ sizeOfTheExpectedStack isNotEqualTo: 0.! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
