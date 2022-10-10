@@ -192,46 +192,6 @@ stackEmptyErrorDescription
 	^ 'Stack is empty'! !
 
 
-!classDefinition: #EmptyStack category: 'Stack-Exercise'!
-OOStack subclass: #EmptyStack
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Stack-Exercise'!
-
-!EmptyStack methodsFor: 'as yet unclassified' stamp: 'ip 10/10/2022 16:31:41'!
-initialization
-	collection := Bag new.! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'EmptyStack class' category: 'Stack-Exercise'!
-EmptyStack class
-	instanceVariableNames: ''!
-
-!EmptyStack class methodsFor: 'as yet unclassified' stamp: 'ip 10/10/2022 16:36:29'!
-isThisTypeOfStack: sizeOfTheExpectedStack.
-	^sizeOfTheExpectedStack = 0.! !
-
-
-!classDefinition: #UsedStack category: 'Stack-Exercise'!
-OOStack subclass: #UsedStack
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Stack-Exercise'!
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'UsedStack class' category: 'Stack-Exercise'!
-UsedStack class
-	instanceVariableNames: ''!
-
-!UsedStack class methodsFor: 'as yet unclassified' stamp: 'ip 10/10/2022 16:37:11'!
-isThisTypeOfStack: sizeOfTheExpectedStack.
-	^ sizeOfTheExpectedStack isNotEqualTo: 0.! !
-
-
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
 	instanceVariableNames: ''
