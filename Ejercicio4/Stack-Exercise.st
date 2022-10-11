@@ -45,7 +45,7 @@ test04PopReturnsLastPushedObject
 	
 	self assert: pushedObject equals: stack pop! !
 
-!OOStackTest methodsFor: 'test' stamp: 'JMB 10/8/2022 17:56:59'!
+!OOStackTest methodsFor: 'test' stamp: 'ip 10/11/2022 19:49:02'!
 test05StackBehavesLIFO
 
 	| stack firstPushedObject secondPushedObject |
@@ -145,40 +145,37 @@ TestCase subclass: #SentenceFinderByPrefixTest
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'collection'
+	instanceVariableNames: 'elements'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 15:49:29'!
+!OOStack methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 19:55:41'!
 isEmpty
-	^self size = 0.! !
+	^elements isEmpty .! !
 
-!OOStack methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 15:49:25'!
+!OOStack methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 19:55:41'!
 size
-	^collection size.! !
+	^elements size.! !
 
 
-!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 16:22:53'!
-pop
-	(self isEmpty ) ifTrue: [^self error: 'Stack is empty' ].
-	^collection remove: self top ifAbsent: [^OOStack stackEmptyErrorDescription ].! !
+!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:01:18'!
+pop 
+	(elements isEmpty) ifTrue: [elements := Empty new].
+	^elements pop.! !
 
-!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 15:44:42'!
+!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:01:24'!
 push: anElementToBeStacked 
-	^collection add: anElementToBeStacked .! !
+	^elements := elements push: anElementToBeStacked .! !
 
-!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 16:23:19'!
+!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 19:55:41'!
 top
-	| elementToCollect |
-	(self isEmpty ) ifTrue: [^self error: 'Stack is empty' ].
-	collection do:[ :anElementOnCollection | elementToCollect := anElementOnCollection]. 
-	^elementToCollect .! !
+	^elements top .! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'ip 10/10/2022 15:41:42'!
+!OOStack methodsFor: 'initialization' stamp: 'ip 10/11/2022 20:01:43'!
 initialize
-	collection := Bag new.! !
+	elements := Empty new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -190,6 +187,114 @@ OOStack class
 stackEmptyErrorDescription
 	
 	^ 'Stack is empty'! !
+
+
+!classDefinition: #PossibleStackTypes category: 'Stack-Exercise'!
+Object subclass: #PossibleStackTypes
+	instanceVariableNames: 'collectionOfElements'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!PossibleStackTypes methodsFor: 'initialization' stamp: 'ip 10/10/2022 17:37:44'!
+initialize
+	self subclassResponsibility .! !
+
+
+!PossibleStackTypes methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 17:47:29'!
+isEmpty
+	self subclassResponsibility .! !
+
+!PossibleStackTypes methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 17:47:33'!
+size
+	self subclassResponsibility .! !
+
+
+!PossibleStackTypes methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:39:20'!
+pop
+	self subclassResponsibility .! !
+
+!PossibleStackTypes methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:02:02'!
+push: anElementToBeStacked 
+	self subclassResponsibility.! !
+
+!PossibleStackTypes methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:47:11'!
+top
+	self subclassResponsibility .! !
+
+
+!classDefinition: #Empty category: 'Stack-Exercise'!
+PossibleStackTypes subclass: #Empty
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:40:05'!
+pop
+	^self error: 'Stack is empty'.! !
+
+!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:51:20'!
+push: anElementToBeStacked
+	| newStackType |
+	newStackType := Using new.
+	newStackType push: anElementToBeStacked .
+	^newStackType.! !
+
+!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:45:51'!
+top
+	^self error: 'Stack is empty' ! !
+
+
+!Empty methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 17:48:03'!
+isEmpty
+	^true.! !
+
+!Empty methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 17:48:00'!
+size
+	^0.! !
+
+
+!Empty methodsFor: 'initialization' stamp: 'ip 10/11/2022 19:56:09'!
+initialize
+	collectionOfElements := OrderedCollection new.! !
+
+
+!classDefinition: #Using category: 'Stack-Exercise'!
+PossibleStackTypes subclass: #Using
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!Using methodsFor: 'initialization' stamp: 'ip 10/11/2022 19:56:09'!
+initialize
+	collectionOfElements := OrderedCollection new.! !
+
+
+!Using methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 19:56:09'!
+isEmpty
+	^collectionOfElements isEmpty ! !
+
+!Using methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 19:56:09'!
+size
+	^collectionOfElements size.! !
+
+
+!Using methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 19:58:55'!
+pop
+	^collectionOfElements removeLast.! !
+
+!Using methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 19:58:27'!
+push: anElementToBeStacked 
+	collectionOfElements addLast: anElementToBeStacked.
+! !
+
+!Using methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 19:56:09'!
+top
+	| elementToCollect |
+	collectionOfElements do:[ :anElementOnCollection | elementToCollect := anElementOnCollection]. 
+	^elementToCollect .! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
