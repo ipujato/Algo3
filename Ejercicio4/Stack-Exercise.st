@@ -159,9 +159,9 @@ size
 	^elements size.! !
 
 
-!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:01:18'!
+!OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:46:56'!
 pop 
-	(elements isEmpty) ifTrue: [elements := Empty new].
+	elements := PossibleStackTypes with: elements collection.
 	^elements pop.! !
 
 !OOStack methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:01:24'!
@@ -196,10 +196,19 @@ Object subclass: #PossibleStackTypes
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!PossibleStackTypes methodsFor: 'initialization' stamp: 'ip 10/10/2022 17:37:44'!
+!PossibleStackTypes methodsFor: 'initialization' stamp: 'ip 10/11/2022 20:41:58'!
 initialize
-	self subclassResponsibility .! !
+	collectionOfElements := OrderedCollection new.! !
 
+!PossibleStackTypes methodsFor: 'initialization' stamp: 'ip 10/11/2022 20:44:38'!
+initializeWith: aCollection
+	collectionOfElements := OrderedCollection new.
+	collectionOfElements addAll: aCollection .! !
+
+
+!PossibleStackTypes methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 20:46:44'!
+collection
+	^collectionOfElements.! !
 
 !PossibleStackTypes methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 17:47:29'!
 isEmpty
@@ -222,6 +231,24 @@ push: anElementToBeStacked
 top
 	self subclassResponsibility .! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PossibleStackTypes class' category: 'Stack-Exercise'!
+PossibleStackTypes class
+	instanceVariableNames: ''!
+
+!PossibleStackTypes class methodsFor: 'private' stamp: 'ip 10/11/2022 20:36:15'!
+stackIsOfThisSubclass: aCollection
+
+	self subclassResponsibility .! !
+
+
+!PossibleStackTypes class methodsFor: 'initialization' stamp: 'ip 10/11/2022 20:41:04'!
+with: aCollection 
+	
+	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
+	^(PossibleStackTypes subclasses detect: [ :aSubclass | aSubclass stackIsOfThisSubclass: aCollection ] ifNone: [  self error: 'aCollection debe ser una coleccion' ]) new initializeWith: aCollection.! !
+
 
 !classDefinition: #Empty category: 'Stack-Exercise'!
 PossibleStackTypes subclass: #Empty
@@ -230,7 +257,7 @@ PossibleStackTypes subclass: #Empty
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:40:05'!
+!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:14:43'!
 pop
 	^self error: 'Stack is empty'.! !
 
@@ -254,10 +281,15 @@ isEmpty
 size
 	^0.! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!Empty methodsFor: 'initialization' stamp: 'ip 10/11/2022 19:56:09'!
-initialize
-	collectionOfElements := OrderedCollection new.! !
+!classDefinition: 'Empty class' category: 'Stack-Exercise'!
+Empty class
+	instanceVariableNames: ''!
+
+!Empty class methodsFor: 'private' stamp: 'ip 10/11/2022 20:37:31'!
+stackIsOfThisSubclass: aCollection
+	^aCollection isEmpty.! !
 
 
 !classDefinition: #Using category: 'Stack-Exercise'!
@@ -266,11 +298,6 @@ PossibleStackTypes subclass: #Using
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
-
-!Using methodsFor: 'initialization' stamp: 'ip 10/11/2022 19:56:09'!
-initialize
-	collectionOfElements := OrderedCollection new.! !
-
 
 !Using methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 19:56:09'!
 isEmpty
@@ -290,11 +317,19 @@ push: anElementToBeStacked
 	collectionOfElements addLast: anElementToBeStacked.
 ! !
 
-!Using methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 19:56:09'!
+!Using methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:21:05'!
 top
-	| elementToCollect |
-	collectionOfElements do:[ :anElementOnCollection | elementToCollect := anElementOnCollection]. 
-	^elementToCollect .! !
+	^collectionOfElements at: collectionOfElements size.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Using class' category: 'Stack-Exercise'!
+Using class
+	instanceVariableNames: ''!
+
+!Using class methodsFor: 'private' stamp: 'ip 10/11/2022 20:38:59'!
+stackIsOfThisSubclass: aCollection
+	^aCollection isEmpty not.! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
