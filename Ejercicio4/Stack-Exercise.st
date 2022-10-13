@@ -292,6 +292,181 @@ stackEmptyErrorDescription
 	^ 'Stack is empty'! !
 
 
+!classDefinition: #PossibleLinkedStacksTypes category: 'Stack-Exercise'!
+Object subclass: #PossibleLinkedStacksTypes
+	instanceVariableNames: 'aLinkedStack'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!PossibleLinkedStacksTypes methodsFor: 'searchFunctions' stamp: 'tgrr 10/13/2022 17:30:23'!
+find: aPrefixToFind
+	
+	self subclassResponsibility .! !
+
+
+!PossibleLinkedStacksTypes methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:32:20'!
+initializeWith: aStack
+	
+	aLinkedStack := aStack.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PossibleLinkedStacksTypes class' category: 'Stack-Exercise'!
+PossibleLinkedStacksTypes class
+	instanceVariableNames: ''!
+
+!PossibleLinkedStacksTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:25:53'!
+initialize: aLinkedStack
+
+	^(PossibleLinkedStacksTypes subclasses detect: [ :aSubclass | aSubclass linkedStackIsOfThisSubclass: aLinkedStack] ifNone: [self error: 'Acomodar']) new initializeWith: aLinkedStack. ! !
+
+
+!PossibleLinkedStacksTypes class methodsFor: 'private' stamp: 'tgrr 10/13/2022 17:27:17'!
+linkedStackIsOfThisSubclass: aLinkedStack
+
+	self subclassResponsibility .! !
+
+
+!classDefinition: #InvalidLinkedStack category: 'Stack-Exercise'!
+PossibleLinkedStacksTypes subclass: #InvalidLinkedStack
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!InvalidLinkedStack methodsFor: 'searchFunctions' stamp: 'tgrr 10/13/2022 17:33:56'!
+find: aPrefixToFind
+
+	^self error: SentenceFinderByPrefix finderErrorDescription! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'InvalidLinkedStack class' category: 'Stack-Exercise'!
+InvalidLinkedStack class
+	instanceVariableNames: ''!
+
+!InvalidLinkedStack class methodsFor: 'private' stamp: 'tgrr 10/13/2022 17:26:12'!
+linkedStackIsOfThisSubclass: aLinkedStack
+
+	^(ValidLinkedStack linkedStackIsOfThisSubclass: aLinkedStack) not.! !
+
+
+!classDefinition: #ValidLinkedStack category: 'Stack-Exercise'!
+PossibleLinkedStacksTypes subclass: #ValidLinkedStack
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!ValidLinkedStack methodsFor: 'searchFunctions' stamp: 'tgrr 10/13/2022 17:35:47'!
+find: aPrefixToFind
+
+	| prefix |
+	prefix := PossiblePrefixesTypes initialize: aPrefixToFind.
+	^prefix find: aPrefixToFind inStack: aLinkedStack.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ValidLinkedStack class' category: 'Stack-Exercise'!
+ValidLinkedStack class
+	instanceVariableNames: ''!
+
+!ValidLinkedStack class methodsFor: 'private' stamp: 'tgrr 10/13/2022 17:26:31'!
+linkedStackIsOfThisSubclass: aLinkedStack
+
+	^aLinkedStack isKindOf: OOStack.! !
+
+
+!classDefinition: #PossiblePrefixesTypes category: 'Stack-Exercise'!
+Object subclass: #PossiblePrefixesTypes
+	instanceVariableNames: 'aPrefixToSearch'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!PossiblePrefixesTypes methodsFor: 'searchFunctions' stamp: 'tgrr 10/13/2022 17:15:40'!
+find: aPrefixToFind inStack: aLinkedStack
+
+	self subclassResponsibility .! !
+
+
+!PossiblePrefixesTypes methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 16:54:14'!
+initializeWith: aPrefix
+
+	aPrefixToSearch := aPrefix.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PossiblePrefixesTypes class' category: 'Stack-Exercise'!
+PossiblePrefixesTypes class
+	instanceVariableNames: ''!
+
+!PossiblePrefixesTypes class methodsFor: 'private' stamp: 'tgrr 10/13/2022 16:51:49'!
+prefixIsOfThisSubclass: aPrefix
+
+	self subclassResponsibility .! !
+
+
+!PossiblePrefixesTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 16:51:07'!
+initialize: aPrefix
+
+	^(PossiblePrefixesTypes subclasses detect: [ :aSubclass | aSubclass prefixIsOfThisSubclass: aPrefix] ifNone: [self error: 'Acomodar']) new initializeWith: aPrefix. ! !
+
+
+!classDefinition: #InvalidPrefix category: 'Stack-Exercise'!
+PossiblePrefixesTypes subclass: #InvalidPrefix
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!InvalidPrefix methodsFor: 'searchFunctions' stamp: 'tgrr 10/13/2022 17:15:51'!
+find: aPrefixToFind inStack: aLinkedStack
+
+	^self error: SentenceFinderByPrefix finderErrorDescription.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'InvalidPrefix class' category: 'Stack-Exercise'!
+InvalidPrefix class
+	instanceVariableNames: ''!
+
+!InvalidPrefix class methodsFor: 'private' stamp: 'tgrr 10/13/2022 17:12:36'!
+prefixIsOfThisSubclass: aPrefix
+
+	^(aPrefix findAnySubStr: ' ' startingAt: 0) <= (aPrefix size) or: (aPrefix isEmpty).! !
+
+
+!classDefinition: #ValidPrefix category: 'Stack-Exercise'!
+PossiblePrefixesTypes subclass: #ValidPrefix
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!ValidPrefix methodsFor: 'searchFunctions' stamp: 'tgrr 10/13/2022 17:17:19'!
+find: aPrefixToFind inStack: aLinkedStack
+
+	| failSafeCollection usefulElements |
+	failSafeCollection := OrderedCollection new.
+	usefulElements := OrderedCollection new.
+	[aLinkedStack isEmpty ] whileFalse: [ failSafeCollection add: aLinkedStack pop. (failSafeCollection last beginsWith: aPrefixToFind) ifTrue: 	[usefulElements add: failSafeCollection last ]]. 
+	failSafeCollection reverseDo: [: anElement | aLinkedStack push: anElement].
+	^usefulElements .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ValidPrefix class' category: 'Stack-Exercise'!
+ValidPrefix class
+	instanceVariableNames: ''!
+
+!ValidPrefix class methodsFor: 'private' stamp: 'tgrr 10/13/2022 17:20:51'!
+prefixIsOfThisSubclass: aPrefix
+
+	^(InvalidPrefix prefixIsOfThisSubclass: aPrefix) not.! !
+
+
 !classDefinition: #PossibleStackTypes category: 'Stack-Exercise'!
 Object subclass: #PossibleStackTypes
 	instanceVariableNames: 'collectionOfElements'
@@ -346,10 +521,9 @@ stackIsOfThisSubclass: aCollection
 	self subclassResponsibility .! !
 
 
-!PossibleStackTypes class methodsFor: 'initialization' stamp: 'ip 10/11/2022 20:41:04'!
+!PossibleStackTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:24:07'!
 with: aCollection 
 	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	^(PossibleStackTypes subclasses detect: [ :aSubclass | aSubclass stackIsOfThisSubclass: aCollection ] ifNone: [  self error: 'aCollection debe ser una coleccion' ]) new initializeWith: aCollection.! !
 
 
@@ -447,7 +621,7 @@ stackIsOfThisSubclass: aCollection
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
-	instanceVariableNames: 'aLinkedStack'
+	instanceVariableNames: 'aLinkedStack aPrefixToSearch'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
@@ -457,18 +631,11 @@ stackLinking: anOOStackToBeLinked
 	aLinkedStack := anOOStackToBeLinked .! !
 
 
-!SentenceFinderByPrefix methodsFor: 'findOperation' stamp: 'tgrr 10/13/2022 16:17:05'!
-find: aPrefixToLookFor
-	|index failSafeCollection usefulElements|
-	index := 0.
-	(aLinkedStack isKindOf: OOStack ) ifFalse: [^self error: SentenceFinderByPrefix finderErrorDescription].
-	(aPrefixToLookFor isEmpty) ifTrue: [^self error: SentenceFinderByPrefix finderErrorDescription].
-	((aPrefixToLookFor findAnySubStr: ' ' startingAt: 0) <= (aPrefixToLookFor size)) ifTrue: [^self error: SentenceFinderByPrefix finderErrorDescription].
-.	failSafeCollection := OrderedCollection new.
-	usefulElements := OrderedCollection new.
-	[aLinkedStack isEmpty ] whileFalse: [failSafeCollection add: aLinkedStack pop. (failSafeCollection last beginsWith: aPrefixToLookFor) ifTrue: [usefulElements add: failSafeCollection last ]. index := index +1 ].
-	failSafeCollection reverseDo: [: anElement | aLinkedStack push: anElement].
-	^usefulElements .! !
+!SentenceFinderByPrefix methodsFor: 'findOperation' stamp: 'tgrr 10/13/2022 17:39:12'!
+find: aPrefixToFind
+	| stack |
+	stack := PossibleLinkedStacksTypes initialize: aLinkedStack .
+	^stack find: aPrefixToFind .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
