@@ -142,11 +142,15 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:20:02'!
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 15:55:05'!
 test01ShouldNotFindWhenNotLinked
 	| searcher |
 	searcher := SentenceFinderByPrefix new. 
-	self deny: (searcher find: 'ho').
+	self 
+		should: [ searcher find: 'ho' ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: SentenceFinderByPrefix finderErrorDescription equals: anError messageText ]
 ! !
 
 !SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:29:31'!
@@ -175,20 +179,71 @@ test03ShouldFindOneOutOfThree
 	self assert: ((searcher find: 'ho') = expected).
 ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:37:45'!
-test03ShouldFindTwoOutOfThree
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 15:36:42'!
+test04ShouldFindTwoOutOfThree
 	| searcher stack expected |
 	stack := OOStack new.
 	stack push: 'hola'.
 	stack push: 'chau'.
 	stack push: 'holas'.
 	expected := OrderedCollection new.
-	expected add: 'hola'.
 	expected add: 'holas'.
+	expected add: 'hola'.
 	searcher := SentenceFinderByPrefix new. 
 	searcher stackLinking: stack .
 	self assert: ((searcher find: 'ho') = expected).
 ! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 15:41:46'!
+test05ShouldDenyCaseSensitiveDifference
+	| searcher stack |
+	stack := OOStack new.
+	stack push: 'Hola'.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack .
+	self assert: ((searcher find: 'ho') isEmpty).
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 15:54:38'!
+test06ShouldRejectEmptyPrefix
+	| searcher stack |
+	stack := OOStack new.
+	stack push: 'Hola'.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack .
+	self 
+		should: [ searcher find: '' ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: SentenceFinderByPrefix finderErrorDescription equals: anError messageText ]
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 16:01:13'!
+test07ShouldNotModifyOriginalStack
+	| searcher stack backUpStack |
+	stack := OOStack new.
+	stack push: 'Hola'.
+	stack push: 'hola'.
+	stack push: 'Holas'.
+	backUpStack := stack postCopy.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack.
+	searcher find: 'ho'.
+	self assert: (backUpStack = stack).
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 16:05:43'!
+test08ShouldRejectPrefixWithEmptySpace
+	| searcher stack |
+	stack := OOStack new.
+	stack push: 'Hola'.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack .
+	self 
+		should: [ searcher find: 'Ho ' ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: SentenceFinderByPrefix finderErrorDescription equals: anError messageText ]! !
 
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
@@ -329,6 +384,11 @@ isEmpty
 size
 	^0.! !
 
+
+!Empty methodsFor: 'initialization' stamp: 'ip 10/11/2022 19:56:09'!
+initialize
+	collectionOfElements := OrderedCollection new.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Empty class' category: 'Stack-Exercise'!
@@ -346,6 +406,11 @@ PossibleStackTypes subclass: #Using
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+!Using methodsFor: 'initialization' stamp: 'ip 10/11/2022 19:56:09'!
+initialize
+	collectionOfElements := OrderedCollection new.! !
+
 
 !Using methodsFor: 'statusMessages' stamp: 'ip 10/11/2022 19:56:09'!
 isEmpty
@@ -392,13 +457,26 @@ stackLinking: anOOStackToBeLinked
 	aLinkedStack := anOOStackToBeLinked .! !
 
 
-!SentenceFinderByPrefix methodsFor: 'findOperation' stamp: 'ip 10/11/2022 21:36:03'!
+!SentenceFinderByPrefix methodsFor: 'findOperation' stamp: 'tgrr 10/13/2022 16:17:05'!
 find: aPrefixToLookFor
 	|index failSafeCollection usefulElements|
 	index := 0.
-	(aLinkedStack isKindOf: OOStack ) ifFalse: [^false].
-	failSafeCollection := OrderedCollection new.
+	(aLinkedStack isKindOf: OOStack ) ifFalse: [^self error: SentenceFinderByPrefix finderErrorDescription].
+	(aPrefixToLookFor isEmpty) ifTrue: [^self error: SentenceFinderByPrefix finderErrorDescription].
+	((aPrefixToLookFor findAnySubStr: ' ' startingAt: 0) <= (aPrefixToLookFor size)) ifTrue: [^self error: SentenceFinderByPrefix finderErrorDescription].
+.	failSafeCollection := OrderedCollection new.
 	usefulElements := OrderedCollection new.
 	[aLinkedStack isEmpty ] whileFalse: [failSafeCollection add: aLinkedStack pop. (failSafeCollection last beginsWith: aPrefixToLookFor) ifTrue: [usefulElements add: failSafeCollection last ]. index := index +1 ].
-	[index > 0] whileTrue: [aLinkedStack push: failSafeCollection removeLast. index := index -1].
+	failSafeCollection reverseDo: [: anElement | aLinkedStack push: anElement].
 	^usefulElements .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SentenceFinderByPrefix class' category: 'Stack-Exercise'!
+SentenceFinderByPrefix class
+	instanceVariableNames: ''!
+
+!SentenceFinderByPrefix class methodsFor: 'errorDescriptions' stamp: 'tgrr 10/13/2022 15:51:10'!
+finderErrorDescription
+
+	^'Could not complete search'.! !
