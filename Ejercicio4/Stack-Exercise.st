@@ -142,6 +142,54 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:20:02'!
+test01ShouldNotFindWhenNotLinked
+	| searcher |
+	searcher := SentenceFinderByPrefix new. 
+	self deny: (searcher find: 'ho').
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:29:31'!
+test02ShouldFindOne
+	| searcher stack expected|
+	stack := OOStack new.
+	stack push: 'hola'.
+	expected := OrderedCollection new.
+	expected add: 'hola'.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack .
+	self assert: ((searcher find: 'ho') = expected ).
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:30:27'!
+test03ShouldFindOneOutOfThree
+	| searcher stack expected |
+	stack := OOStack new.
+	stack push: 'hola'.
+	stack push: 'chau'.
+	stack push: 'Hola'.
+	expected := OrderedCollection new.
+	expected add: 'hola'.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack .
+	self assert: ((searcher find: 'ho') = expected).
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'ip 10/11/2022 21:37:45'!
+test03ShouldFindTwoOutOfThree
+	| searcher stack expected |
+	stack := OOStack new.
+	stack push: 'hola'.
+	stack push: 'chau'.
+	stack push: 'holas'.
+	expected := OrderedCollection new.
+	expected add: 'hola'.
+	expected add: 'holas'.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack .
+	self assert: ((searcher find: 'ho') = expected).
+! !
+
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
@@ -257,9 +305,9 @@ PossibleStackTypes subclass: #Empty
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 20:14:43'!
+!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/11/2022 21:57:57'!
 pop
-	^self error: 'Stack is empty'.! !
+	self error: OOStack stackEmptyErrorDescription.! !
 
 !Empty methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:51:20'!
 push: anElementToBeStacked
@@ -268,9 +316,9 @@ push: anElementToBeStacked
 	newStackType push: anElementToBeStacked .
 	^newStackType.! !
 
-!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/10/2022 17:45:51'!
+!Empty methodsFor: 'stackFunctions' stamp: 'ip 10/13/2022 10:48:53'!
 top
-	^self error: 'Stack is empty' ! !
+	self error: OOStack stackEmptyErrorDescription.! !
 
 
 !Empty methodsFor: 'statusMessages' stamp: 'ip 10/10/2022 17:48:03'!
@@ -334,7 +382,23 @@ stackIsOfThisSubclass: aCollection
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
-	instanceVariableNames: ''
+	instanceVariableNames: 'aLinkedStack'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+!SentenceFinderByPrefix methodsFor: 'initialization' stamp: 'ip 10/11/2022 20:56:49'!
+stackLinking: anOOStackToBeLinked
+	aLinkedStack := anOOStackToBeLinked .! !
+
+
+!SentenceFinderByPrefix methodsFor: 'findOperation' stamp: 'ip 10/11/2022 21:36:03'!
+find: aPrefixToLookFor
+	|index failSafeCollection usefulElements|
+	index := 0.
+	(aLinkedStack isKindOf: OOStack ) ifFalse: [^false].
+	failSafeCollection := OrderedCollection new.
+	usefulElements := OrderedCollection new.
+	[aLinkedStack isEmpty ] whileFalse: [failSafeCollection add: aLinkedStack pop. (failSafeCollection last beginsWith: aPrefixToLookFor) ifTrue: [usefulElements add: failSafeCollection last ]. index := index +1 ].
+	[index > 0] whileTrue: [aLinkedStack push: failSafeCollection removeLast. index := index -1].
+	^usefulElements .! !
