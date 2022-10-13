@@ -232,12 +232,12 @@ test07ShouldNotModifyOriginalStackWhenFindingPrefix
 	self assert: (backUpStack = stack).
 ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 18:02:39'!
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 18:07:57'!
 test08ShouldNotModifyOriginalStackWhenNotFindingPrefix
 	| searcher stack backUpStack |
 	stack := OOStack new.
 	stack push: 'Hola'.
-	stack push: 'Holaa'.
+	stack push: 'Holaaa'.
 	stack push: 'Holas'.
 	backUpStack := stack postCopy.
 	searcher := SentenceFinderByPrefix new. 
