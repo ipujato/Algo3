@@ -316,16 +316,22 @@ initializeWith: aStack
 PossibleLinkedStacksTypes class
 	instanceVariableNames: ''!
 
-!PossibleLinkedStacksTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:25:53'!
+!PossibleLinkedStacksTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:49:31'!
 initialize: aLinkedStack
 
-	^(PossibleLinkedStacksTypes subclasses detect: [ :aSubclass | aSubclass linkedStackIsOfThisSubclass: aLinkedStack] ifNone: [self error: 'Acomodar']) new initializeWith: aLinkedStack. ! !
+	^(PossibleLinkedStacksTypes subclasses detect: [ :aSubclass | aSubclass linkedStackIsOfThisSubclass: aLinkedStack] ifNone: [self error: self noSubclassError ]) new initializeWith: aLinkedStack. ! !
 
 
 !PossibleLinkedStacksTypes class methodsFor: 'private' stamp: 'tgrr 10/13/2022 17:27:17'!
 linkedStackIsOfThisSubclass: aLinkedStack
 
 	self subclassResponsibility .! !
+
+
+!PossibleLinkedStacksTypes class methodsFor: 'errors descriptions' stamp: 'tgrr 10/13/2022 17:48:12'!
+noSubclassError
+	
+	^'There is no valid subclass.'.! !
 
 
 !classDefinition: #InvalidLinkedStack category: 'Stack-Exercise'!
@@ -408,10 +414,16 @@ prefixIsOfThisSubclass: aPrefix
 	self subclassResponsibility .! !
 
 
-!PossiblePrefixesTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 16:51:07'!
+!PossiblePrefixesTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:47:34'!
 initialize: aPrefix
 
-	^(PossiblePrefixesTypes subclasses detect: [ :aSubclass | aSubclass prefixIsOfThisSubclass: aPrefix] ifNone: [self error: 'Acomodar']) new initializeWith: aPrefix. ! !
+	^(PossiblePrefixesTypes subclasses detect: [ :aSubclass | aSubclass prefixIsOfThisSubclass: aPrefix] ifNone: [self error: self noSubclassError]) new initializeWith: aPrefix. ! !
+
+
+!PossiblePrefixesTypes class methodsFor: 'errors descriptions' stamp: 'tgrr 10/13/2022 17:46:43'!
+noSubclassError
+	
+	^'There is no valid subclass.'.! !
 
 
 !classDefinition: #InvalidPrefix category: 'Stack-Exercise'!
@@ -521,10 +533,16 @@ stackIsOfThisSubclass: aCollection
 	self subclassResponsibility .! !
 
 
-!PossibleStackTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:24:07'!
+!PossibleStackTypes class methodsFor: 'initialization' stamp: 'tgrr 10/13/2022 17:53:40'!
 with: aCollection 
 	
-	^(PossibleStackTypes subclasses detect: [ :aSubclass | aSubclass stackIsOfThisSubclass: aCollection ] ifNone: [  self error: 'aCollection debe ser una coleccion' ]) new initializeWith: aCollection.! !
+	^(PossibleStackTypes subclasses detect: [ :aSubclass | aSubclass stackIsOfThisSubclass: aCollection ] ifNone: [ self error: self noSubclassError ]) new initializeWith: aCollection.! !
+
+
+!PossibleStackTypes class methodsFor: 'errors descriptions' stamp: 'tgrr 10/13/2022 17:54:26'!
+noSubclassError
+
+	^'There is no valid subclass.'.! !
 
 
 !classDefinition: #Empty category: 'Stack-Exercise'!
