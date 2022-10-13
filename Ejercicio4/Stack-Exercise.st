@@ -218,8 +218,8 @@ test06ShouldRejectEmptyPrefix
 			self assert: SentenceFinderByPrefix finderErrorDescription equals: anError messageText ]
 ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 16:01:13'!
-test07ShouldNotModifyOriginalStack
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 18:01:19'!
+test07ShouldNotModifyOriginalStackWhenFindingPrefix
 	| searcher stack backUpStack |
 	stack := OOStack new.
 	stack push: 'Hola'.
@@ -232,8 +232,22 @@ test07ShouldNotModifyOriginalStack
 	self assert: (backUpStack = stack).
 ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 16:05:43'!
-test08ShouldRejectPrefixWithEmptySpace
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 18:02:39'!
+test08ShouldNotModifyOriginalStackWhenNotFindingPrefix
+	| searcher stack backUpStack |
+	stack := OOStack new.
+	stack push: 'Hola'.
+	stack push: 'Holaa'.
+	stack push: 'Holas'.
+	backUpStack := stack postCopy.
+	searcher := SentenceFinderByPrefix new. 
+	searcher stackLinking: stack.
+	searcher find: 'ho'.
+	self assert: (backUpStack = stack).
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'tests' stamp: 'tgrr 10/13/2022 18:01:54'!
+test09ShouldRejectPrefixWithEmptySpace
 	| searcher stack |
 	stack := OOStack new.
 	stack push: 'Hola'.
