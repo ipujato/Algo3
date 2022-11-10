@@ -76,6 +76,32 @@ test11PortafolioWithPortfolioReturnsTransactionsCorrectly
 	testPortfolio add: testPortfolio2.
 	self assert: (testPortfolio transactions = testPortfolio2 transactions).! !
 
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:45:06'!
+test12PortfolioCantAddAccountTwoTimes
+	testPortfolio add: accountWith100Deposit .
+	[ testPortfolio add: accountWith100Deposit.
+	self fail ]
+		on: Error 
+		do: [ :anError | 
+				self assert: anError messageText = Portfolio repeatedElementError .]		! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 19:05:18'!
+test13PortfolioCantAddItself
+	[ testPortfolio add: testPortfolio.
+	self fail ]
+		on: Error 
+		do: [ :anError | 
+				self assert: anError messageText = Portfolio repeatedElementError .]		! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 19:07:26'!
+test14PortfolioCantAddPortfolioTwoTimes
+	testPortfolio add: testPortfolio2 .
+	[ testPortfolio add: testPortfolio2 .
+	self fail ]
+		on: Error 
+		do: [ :anError | 
+				self assert: anError messageText = Portfolio repeatedElementError .]		! !
+
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
@@ -319,9 +345,10 @@ Object subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'main protocol' stamp: 'ip 11/8/2022 20:25:18'!
+!Portfolio methodsFor: 'main protocol' stamp: 'ip 11/10/2022 18:48:14'!
 add: aRecievedElement 
-	includedElements add: aRecievedElement .! !
+	
+	((aRecievedElement isAddable: includedElements) and: ((self = aRecievedElement) not)) ifTrue: [includedElements add: aRecievedElement .] ifFalse: [^self error: Portfolio repeatedElementError].! !
 
 !Portfolio methodsFor: 'main protocol' stamp: 'ip 11/8/2022 20:19:29'!
 balance
@@ -336,6 +363,10 @@ hasRegistered: aTransaction
 	includedElements do: [ :anElement | (anElement hasRegistered: aTransaction) ifTrue: [^true]].
 	^false.! !
 
+!Portfolio methodsFor: 'main protocol' stamp: 'ip 11/10/2022 18:47:22'!
+isAddable: elements
+	^ (elements includes: self) not.! !
+
 !Portfolio methodsFor: 'main protocol' stamp: 'ip 11/8/2022 21:00:41'!
 transactions
 	| totalTransactions |
@@ -349,6 +380,16 @@ transactions
 initialize
 	
 	includedElements := OrderedCollection new.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio'!
+Portfolio class
+	instanceVariableNames: ''!
+
+!Portfolio class methodsFor: 'error messages' stamp: 'ip 11/10/2022 18:43:53'!
+repeatedElementError
+	^ 'El elemento a insertar ya esta incluido'! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
@@ -374,6 +415,10 @@ hasRegistered: aTransaction
 
 	^ transactions includes: aTransaction 
 ! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'ip 11/10/2022 18:30:16'!
+isAddable: elements
+	^ (elements includes: self) not.! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
