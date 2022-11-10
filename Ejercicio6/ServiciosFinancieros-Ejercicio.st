@@ -1,110 +1,80 @@
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'testPortfolio testAccount testPortfolio2 accountWith100Deposit testAccount2 depositFor100Peso'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:13:28'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:18:29'!
+setUp
+	testPortfolio := Portfolio new.
+	testPortfolio2 := Portfolio new.
+	testAccount := ReceptiveAccount new.
+	testAccount2 := ReceptiveAccount new.
+	accountWith100Deposit := ReceptiveAccount new.
+	depositFor100Peso := Deposit register: 100*peso on: accountWith100Deposit .! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:08'!
 test01PortfolioStartsWithZeroBalance
 
-	self assert: (Portfolio new) balance = 0.! !
+	self assert: testPortfolio balance = 0.! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:22:31'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:51'!
 test02PortfolioCanAddAReceptiveAccount
-	| account portfolio |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	portfolio add: account .
-	self assert: portfolio elements isEmpty not. ! !
+	testPortfolio add: testAccount .
+	self assert: testPortfolio elements isEmpty not. ! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:26:38'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:08'!
 test03PortafolioWithBalancedAccountReturnsCorrectBalance
-	| account portfolio |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	Deposit register: 100 * peso on: account.
-	portfolio add: account.
-	self assert: portfolio balance = account balance.! !
+	testPortfolio add: accountWith100Deposit .
+	self assert: testPortfolio balance = accountWith100Deposit balance.! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:24:28'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:43'!
 test04PortfolioCanAddAnotherPortfolio
-	| secondPortfolio portfolio |
-	portfolio := Portfolio new.
-	secondPortfolio := Portfolio new.
-	portfolio add: secondPortfolio.
-	self assert: portfolio elements isEmpty not. ! !
+	testPortfolio add: testPortfolio2 .
+	self assert: testPortfolio elements isEmpty not. ! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:30:42'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:43'!
 test05PortfolioWithPortfolioIncludedReturnsCorrectBalance
-	| account portfolio secondPortfolio |
-	portfolio := Portfolio new.
-	secondPortfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	Deposit register: 100 * peso on: account.
-	secondPortfolio add: account.
-	portfolio add: secondPortfolio .
-	self assert: portfolio balance = secondPortfolio balance.! !
+	testPortfolio2 add: accountWith100Deposit .
+	testPortfolio add: testPortfolio2 .
+	self assert: testPortfolio balance = testPortfolio2 balance.! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:33:27'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:18:30'!
 test06PortfolioAddsUpBalanceCorrectly
-	| account1 account2 account3  portfolio  |
-	portfolio := Portfolio new.
-	account1 := ReceptiveAccount new.
-	Deposit register: 100 * peso on: account1.
-	account2 := ReceptiveAccount new.
-	Deposit register: 400 * peso on: account2.
-	account3 := ReceptiveAccount new.
-	Withdraw register: 100 * peso on: account3.
-	portfolio add: account1 .
-	portfolio add: account2 .
-	portfolio add: account3 .
-	self assert: portfolio balance = (400 *peso).! !
+	Deposit register: 400 * peso on: testAccount.
+	Withdraw register: 100 * peso on: testAccount2.
+	testPortfolio add: accountWith100Deposit .
+	testPortfolio add: testAccount .
+	testPortfolio add: testAccount2 .
+	self assert: testPortfolio balance = (400 *peso).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:36:48'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:08'!
 test07EmptyPortfolioCantFindTransactions
-	| portfolio  account transaction |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	transaction := Deposit register: (100*peso) on: account. 
-	self deny: (portfolio hasRegistered: transaction).! !
+	self deny: (testPortfolio hasRegistered: depositFor100Peso).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:41:23'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:08'!
 test08IncludedTransactionCanBeFoundByPortfolio
-	| portfolio account transaction |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	transaction := Deposit register: (100*peso) on: account. 
-	portfolio add: account .
-	self assert: (portfolio hasRegistered: transaction).! !
+	testPortfolio add: accountWith100Deposit .
+	self assert: (testPortfolio hasRegistered: depositFor100Peso).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:50:45'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:08'!
 test09EmptyPortafolioReturnsEmptyTransactions
-	| portfolio |
-	portfolio := Portfolio new.
-	self assert: (portfolio transactions isEmpty).! !
+	self assert: (testPortfolio transactions isEmpty).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 20:57:11'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:51'!
 test10PortafolioReturnsTransactionsCorrectly
-	| portfolio account |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	Deposit register: (100*peso) on: account.
-	Withdraw register: (100*peso) on: account. 
-	portfolio add: account.
-	self assert: (portfolio transactions = account transactions).! !
+	Deposit register: (100*peso) on: testAccount.
+	Withdraw register: (100*peso) on: testAccount. 
+	testPortfolio add: testAccount.
+	self assert: (testPortfolio transactions = testAccount transactions).! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/8/2022 21:04:33'!
+!PortfolioTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:17:43'!
 test11PortafolioWithPortfolioReturnsTransactionsCorrectly
-	| portfolio account secondPortfolio |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	secondPortfolio := Portfolio new.
-	Deposit register: (100*peso) on: account.
-	Withdraw register: (100*peso) on: account. 
-	secondPortfolio add: account.
-	portfolio add: secondPortfolio.
-	self assert: (portfolio transactions = secondPortfolio transactions).! !
+	Withdraw register: (100*peso) on: accountWith100Deposit . 
+	testPortfolio2 add: accountWith100Deposit .
+	testPortfolio add: testPortfolio2.
+	self assert: (testPortfolio transactions = testPortfolio2 transactions).! !
 
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
@@ -113,19 +83,6 @@ TestCase subclass: #ReceptiveAccountTest
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'ip 11/8/2022 19:49:28'!
-atest08hayQueTener4o5Tests
-
-	| account deposit |
-	
-	account := ReceptiveAccount new.
-	
-	deposit := Deposit register: 50 * peso on: account.
-		
-	self assert: 1 equals: account transactions size.
-	self assert: (account transactions includes: deposit).
-! !
 
 !ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:43'!
 test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
@@ -211,6 +168,46 @@ test07AccountKnowsItsTransactions
 ! !
 
 
+!classDefinition: #TransferenceTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #TransferenceTest
+	instanceVariableNames: 'testReceptiveAccount testReceptiveAccount2 a100PesoTransfer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TransferenceTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:25:18'!
+setUp
+	testReceptiveAccount _ ReceptiveAccount new.
+	testReceptiveAccount2 _ ReceptiveAccount new.
+	a100PesoTransfer _ Transference register: 100*peso on: testReceptiveAccount from: testReceptiveAccount2.! !
+
+!TransferenceTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:25:18'!
+test01MoneyFromOneAccountToAnotherIsMovedCorrectly
+	self assert: testReceptiveAccount balance = (100*peso).
+	self assert: testReceptiveAccount2 balance = (-100*peso).! !
+
+!TransferenceTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:24:35'!
+test02ATransferKnowsItsValue
+	| transfer |
+	transfer _ a100PesoTransfer .
+	self assert: transfer value = (100*peso).
+	! !
+
+!TransferenceTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:24:35'!
+test03DepositLegKnowsWithdraw
+	| leg |
+	leg _ a100PesoTransfer depositLeg.
+	self assert: (testReceptiveAccount2 hasRegistered: (leg relatedTransaction)).
+	! !
+
+!TransferenceTest methodsFor: 'tests' stamp: 'ip 11/10/2022 18:25:18'!
+test04ExtractionLegKnowsDeposit
+	| leg |
+	leg _ a100PesoTransfer extractionLeg.
+	self assert: (testReceptiveAccount hasRegistered: (leg relatedTransaction)).
+	! !
+
+
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #AccountTransaction
 	instanceVariableNames: ''
@@ -258,12 +255,12 @@ initializeFor: aValue
 	value := aValue ! !
 
 
-!Deposit methodsFor: 'value' stamp: 'ip 11/8/2022 19:48:28'!
+!Deposit methodsFor: 'main protocol' stamp: 'ip 11/8/2022 19:48:28'!
 balanceValue
 
 	^ value! !
 
-!Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!Deposit methodsFor: 'main protocol' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
 	^ value! !
@@ -293,12 +290,12 @@ initializeFor: aValue
 	value := aValue .! !
 
 
-!Withdraw methodsFor: 'value' stamp: 'ip 11/8/2022 19:48:28'!
+!Withdraw methodsFor: 'main protocol' stamp: 'ip 11/8/2022 19:48:28'!
 balanceValue
 
 	^ value negated ! !
 
-!Withdraw methodsFor: 'value' stamp: 'ip 11/8/2022 19:43:34'!
+!Withdraw methodsFor: 'main protocol' stamp: 'ip 11/8/2022 19:43:34'!
 value
 
 	^ value ! !
@@ -388,3 +385,101 @@ register: aTransaction
 transactions 
 
 	^ transactions copy! !
+
+
+!classDefinition: #Transference category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Transference
+	instanceVariableNames: 'value extractionLeg depositLeg'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Transference methodsFor: 'main protocol' stamp: 'ip 11/10/2022 17:50:51'!
+depositLeg
+	^depositLeg! !
+
+!Transference methodsFor: 'main protocol' stamp: 'ip 11/10/2022 17:43:49'!
+extractionLeg
+	^extractionLeg ! !
+
+!Transference methodsFor: 'main protocol' stamp: 'ip 11/10/2022 17:24:33'!
+value
+	^ value! !
+
+
+!Transference methodsFor: 'initialization' stamp: 'ip 11/10/2022 18:00:52'!
+initializeWith: anAmountOfMoney on: receptorAccount from: originAccount
+	extractionLeg _ ExtractionLeg register: anAmountOfMoney on: receptorAccount from: originAccount .
+	depositLeg _ DepositLeg register: anAmountOfMoney on: originAccount from: originAccount .
+	value _ anAmountOfMoney .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Transference class' category: 'ServiciosFinancieros-Ejercicio'!
+Transference class
+	instanceVariableNames: ''!
+
+!Transference class methodsFor: 'instanceCreation' stamp: 'ip 11/10/2022 17:26:10'!
+register: anAmountOfMoney on: receptorAccount from: originAccount
+	|transfer |
+	transfer _ Transference new.
+	^transfer initializeWith: anAmountOfMoney on: receptorAccount from: originAccount .! !
+
+
+!classDefinition: #DepositLeg category: 'ServiciosFinancieros-Ejercicio'!
+Transference subclass: #DepositLeg
+	instanceVariableNames: 'withdrawForTransfer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!DepositLeg methodsFor: 'initialization' stamp: 'ip 11/10/2022 17:47:46'!
+initializeWith: anAmountOfMoney on: receptorAccount from: originAccount
+	withdrawForTransfer _ Withdraw register: anAmountOfMoney on: originAccount.
+	! !
+
+
+!DepositLeg methodsFor: 'main protocol' stamp: 'ip 11/10/2022 17:49:13'!
+relatedTransaction
+	^withdrawForTransfer ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'DepositLeg class' category: 'ServiciosFinancieros-Ejercicio'!
+DepositLeg class
+	instanceVariableNames: ''!
+
+!DepositLeg class methodsFor: 'instanceCreation' stamp: 'ip 11/10/2022 17:46:27'!
+register: anAmountOfMoney on: receptorAccount from: originAccount
+	| leg |
+	leg _ DepositLeg new.
+	^leg initializeWith: anAmountOfMoney on: receptorAccount from: originAccount .! !
+
+
+!classDefinition: #ExtractionLeg category: 'ServiciosFinancieros-Ejercicio'!
+Transference subclass: #ExtractionLeg
+	instanceVariableNames: 'depositForTransfer depositAccount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!ExtractionLeg methodsFor: 'initialization' stamp: 'ip 11/10/2022 17:57:31'!
+initializeWith: anAmountOfMoney on: receptorAccount from: originAccount
+	depositForTransfer _ Deposit register: anAmountOfMoney on: receptorAccount.! !
+
+
+!ExtractionLeg methodsFor: 'main protocol' stamp: 'ip 11/10/2022 17:44:43'!
+relatedTransaction
+	^depositForTransfer ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ExtractionLeg class' category: 'ServiciosFinancieros-Ejercicio'!
+ExtractionLeg class
+	instanceVariableNames: ''!
+
+!ExtractionLeg class methodsFor: 'instanceCreation' stamp: 'ip 11/10/2022 17:38:36'!
+register: anAmountOfMoney on: receptorAccount from: originAccount
+	| leg |
+	leg _ ExtractionLeg new.
+	^leg initializeWith: anAmountOfMoney on: receptorAccount from: originAccount .! !
