@@ -1,3 +1,213 @@
+!classDefinition: #AccountReportTest category: 'ServiciosFinancieros-Solucion'!
+TestCase subclass: #AccountReportTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:17:50'!
+test01CantDoASummaryOfSomethingThatIsNotAnAccount
+	 |anAccountSummary|
+	anAccountSummary _ AccountReporter for: OrderedCollection new.
+	
+	"self assert: 'No puedo generar este reporte' equals: anAccountSummary accountSummary."
+	self 
+		should: [ anAccountSummary accountSummary ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: AccountReporter InvalidAccountAssigned equals: anError messageText.
+			]! !
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:17:56'!
+test02AnEmptyAccountHasASummaryWithOnlyBalance
+	| anAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: (OrderedCollection with: 'Balance = 0 * pesos') equals: anAccountSummary accountSummary.! !
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:14:38'!
+test03AUsedAccountSummaryHasItsOnlyWithdraw
+	| anAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	Withdraw register: 100*peso on: anAccount .
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: (OrderedCollection with: 'Extracción por 100 * pesos' with: 'Balance = -100 * pesos') equals: anAccountSummary accountSummary.! !
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:13:50'!
+test04AUsedAccountSummaryHasItsOnlyMadeTransfer
+	| anAccount aSecondAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	aSecondAccount _ ReceptiveAccount new.
+	Transfer amount: 100 * peso from: anAccount to: aSecondAccount.
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: (OrderedCollection with: 'Salida por transferencia de 100 * pesos' with: 'Balance = -100 * pesos') equals: anAccountSummary accountSummary.! !
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:14:00'!
+test05AUsedAccountSummaryHasItsOnlyRecivedTransfer
+	| anAccount aSecondAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	aSecondAccount _ ReceptiveAccount new.
+	Transfer amount: 100 * peso from: anAccount to: aSecondAccount.
+	anAccountSummary _ AccountReporter for: aSecondAccount .
+	
+	self assert: (OrderedCollection with: 'Entrada por transferencia de 100 * pesos' with: 'Balance = 100 * pesos') equals: anAccountSummary accountSummary.! !
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:18:06'!
+test06AUsedAccountSummaryHasItsOnlyDeposit
+	| anAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	Deposit register: 100*peso on: anAccount .
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: (OrderedCollection with: 'Depósito por 100 * pesos' with: 'Balance = 100 * pesos') equals: anAccountSummary accountSummary.! !
+
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:18:16'!
+test07AUsedAccountSummaryIsCorrect
+	| anAccount aSecondAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	aSecondAccount _ ReceptiveAccount new.
+	Deposit register: 100*peso on: anAccount .
+	Withdraw register: 10*peso on: anAccount .
+	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
+	Transfer amount: 20 * peso from: aSecondAccount to: anAccount .
+	anAccountSummary _ AccountReporter for: anAccount .
+	
+	self assert: (OrderedCollection with: 'Depósito por 100 * pesos' with: 'Extracción por 10 * pesos' with: 'Salida por transferencia de 10 * pesos' with: 'Entrada por transferencia de 20 * pesos' with: 'Balance = 100 * pesos') equals: anAccountSummary accountSummary.! !
+
+
+!AccountReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:17:23'!
+test08CantDoANetTransferReportOfSomethingThatIsNotAnAccount
+	 |anAccountSummary|
+	anAccountSummary _ AccountReporter for: OrderedCollection new.
+	self 
+		should: [ anAccountSummary netTransferReport ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: AccountReporter InvalidAccountAssigned equals: anError messageText.
+			]! !
+
+!AccountReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:29:56'!
+test09AnEmptyAccountHasAZeroNetReport
+	| anAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: 'Net Transfer Balance = 0 * pesos' equals: anAccountSummary netTransferReport .! !
+
+!AccountReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:29:45'!
+test10AnAccountWithNoTransfersHasAZeroNetReport
+	| anAccount anAccountSummary |
+	anAccount _ ReceptiveAccount new.
+	Deposit register: 100*peso on: anAccount .
+	Withdraw register: 50 * peso on: anAccount .
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: 'Net Transfer Balance = 0 * pesos' equals: anAccountSummary netTransferReport .! !
+
+!AccountReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:34:27'!
+test11AnAccountWithARecivedTransfersHasANetReport
+	| anAccount anAccountSummary aSecondAccount|
+	anAccount _ ReceptiveAccount new.
+	aSecondAccount _ ReceptiveAccount new.
+	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
+	anAccountSummary _ AccountReporter for: aSecondAccount .
+	
+	self assert: 'Net Transfer Balance = 10 * pesos' equals: anAccountSummary netTransferReport .! !
+
+!AccountReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:34:19'!
+test12AnAccountWithAnOutgoingTransfersHasANetReport
+	| anAccount anAccountSummary aSecondAccount|
+	anAccount _ ReceptiveAccount new.
+	aSecondAccount _ ReceptiveAccount new.
+	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: 'Net Transfer Balance = -10 * pesos' equals: anAccountSummary netTransferReport .! !
+
+!AccountReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:37:55'!
+test13NetReportIsCorrectForMultipleTransferAccount
+	| anAccount anAccountSummary aSecondAccount|
+	anAccount _ ReceptiveAccount new.
+	aSecondAccount _ ReceptiveAccount new.
+	Transfer amount: 100 * peso from: aSecondAccount to: anAccount.
+	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
+	anAccountSummary _ AccountReporter for: anAccount.
+	
+	self assert: 'Net Transfer Balance = 90 * pesos' equals: anAccountSummary netTransferReport .! !
+
+
+!classDefinition: #PortfolioReporterTest category: 'ServiciosFinancieros-Solucion'!
+TestCase subclass: #PortfolioReporterTest
+	instanceVariableNames: 'associatedAccount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
+
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:18:24'!
+test01AnIndividualPortfolioPrintsItsName
+	self assert: (OrderedCollection with: 'Portfolio de la familia') equals: ((PortfolioReporter for: (Portfolio named: 'Portfolio de la familia')) treePrinter).! !
+
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:18:30'!
+test02AnIndividualPortfolioPrintsItsSonIndented
+	| account portfolio |
+	portfolio _ Portfolio named: 'Portfolio de la familia'.
+	account _ ReceptiveAccount named: 'Cuenta mia'.
+	portfolio add: account . 
+	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Cuenta mia') equals: ((PortfolioReporter for: portfolio) treePrinter).! !
+
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:18:35'!
+test03ADoubleComposedPortfolioHasDoubleIndetation
+	| account portfolio portfolio2 |
+	portfolio _ Portfolio named: 'Portfolio de la familia'.
+	portfolio2 _ Portfolio named: 'Portfolio de hijo'.
+	account _ ReceptiveAccount named: 'Cuenta de Juan'.
+	portfolio add: portfolio2.
+	portfolio2 add: account . 
+	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Portfolio de hijo' with: '##Cuenta de Juan') equals: ((PortfolioReporter for: portfolio) treePrinter).! !
+
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:19:25'!
+test04DoubleComposedWithDoubleAccountPrintsCorrectly
+	| portfolio portfolio2 expectedCollection |
+	portfolio _ Portfolio named: 'Portfolio de la familia'.
+	portfolio2 _ Portfolio named: 'Portfolio de hijos'.
+	portfolio add: (ReceptiveAccount named: 'Cuenta mia').
+	portfolio add: portfolio2.
+	portfolio2 add:  (ReceptiveAccount named: 'Cuenta de Juan') . 
+	portfolio2 add:  (ReceptiveAccount named: 'Cuenta de Angeles') . 
+	expectedCollection _ OrderedCollection with: 'Portfolio de la familia' with: '#Cuenta mia' with: '#Portfolio de hijos' with: '##Cuenta de Juan' with: '##Cuenta de Angeles'.
+	self assert: expectedCollection equals: (PortfolioReporter for: portfolio) treePrinter.! !
+
+
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/17/2022 20:47:56'!
+test05AnIndividualPortfolioPrintsItsNameWithBalance
+	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Balance = 0 * pesos') equals: ((PortfolioReporter for: (Portfolio named: 'Portfolio de la familia')) detailedTreePrinter).! !
+
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/17/2022 20:48:08'!
+test06AnIndividualPortfolioPrintsItsSonIndentedWithBothBalances
+	| account portfolio |
+	portfolio _ Portfolio named: 'Portfolio de la familia'.
+	account _ ReceptiveAccount named: 'Cuenta mia'.
+	Deposit register: 10 * peso on: account .
+	portfolio add: account . 
+	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Cuenta mia' with: '##Depósito por 10 * pesos' with: '##Balance = 10 * pesos' with: '#Balance = 10 * pesos') equals: ((PortfolioReporter for: portfolio) detailedTreePrinter).! !
+
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/17/2022 20:52:41'!
+test07ADoubleComposedPortfolioHasDoubleIdentationAndBalance
+	| account portfolio portfolio2 expectedResult |
+	portfolio _ Portfolio named: 'Portfolio de la familia'.
+	portfolio2 _ Portfolio named: 'Portfolio de hijo'.
+	account _ ReceptiveAccount named: 'Cuenta de Juan'.
+	Deposit register: 10 * peso on: account .
+	portfolio add: portfolio2.
+	portfolio2 add: account . 
+	expectedResult _ OrderedCollection with: 'Portfolio de la familia' with: '#Portfolio de hijo' with: '##Cuenta de Juan' with: '###Depósito por 10 * pesos' with: '###Balance = 10 * pesos' with: '##Balance = 10 * pesos'.
+	expectedResult add: '#Balance = 10 * pesos'.
+	self assert: expectedResult equals: ((PortfolioReporter for: portfolio) detailedTreePrinter).! !
+
+
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Solucion'!
 TestCase subclass: #PortfolioTest
 	instanceVariableNames: ''
@@ -304,147 +514,6 @@ test07AccountKnowsItsTransactions
 ! !
 
 
-!classDefinition: #ReportTest category: 'ServiciosFinancieros-Solucion'!
-TestCase subclass: #ReportTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
-
-!ReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:17:23'!
-test08CantDoANetTransferReportOfSomethingThatIsNotAnAccount
-	 |anAccountSummary|
-	anAccountSummary _ AccountReporter for: OrderedCollection new.
-	self 
-		should: [ anAccountSummary netTransferReport ]
-		raise: Error - MessageNotUnderstood 
-		withExceptionDo: [ :anError |
-			self assert: AccountReporter InvalidAccountAssigned equals: anError messageText.
-			]! !
-
-!ReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:29:56'!
-test09AnEmptyAccountHasAZeroNetReport
-	| anAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: 'Net Transfer Balance = 0 * pesos' equals: anAccountSummary netTransferReport .! !
-
-!ReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:29:45'!
-test10AnAccountWithNoTransfersHasAZeroNetReport
-	| anAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	Deposit register: 100*peso on: anAccount .
-	Withdraw register: 50 * peso on: anAccount .
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: 'Net Transfer Balance = 0 * pesos' equals: anAccountSummary netTransferReport .! !
-
-!ReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:34:27'!
-test11AnAccountWithARecivedTransfersHasANetReport
-	| anAccount anAccountSummary aSecondAccount|
-	anAccount _ ReceptiveAccount new.
-	aSecondAccount _ ReceptiveAccount new.
-	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
-	anAccountSummary _ AccountReporter for: aSecondAccount .
-	
-	self assert: 'Net Transfer Balance = 10 * pesos' equals: anAccountSummary netTransferReport .! !
-
-!ReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:34:19'!
-test12AnAccountWithAnOutgoingTransfersHasANetReport
-	| anAccount anAccountSummary aSecondAccount|
-	anAccount _ ReceptiveAccount new.
-	aSecondAccount _ ReceptiveAccount new.
-	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: 'Net Transfer Balance = -10 * pesos' equals: anAccountSummary netTransferReport .! !
-
-!ReportTest methodsFor: 'net transfer report test' stamp: 'ip 11/17/2022 12:37:55'!
-test13NetReportIsCorrectForMultipleTransferAccount
-	| anAccount anAccountSummary aSecondAccount|
-	anAccount _ ReceptiveAccount new.
-	aSecondAccount _ ReceptiveAccount new.
-	Transfer amount: 100 * peso from: aSecondAccount to: anAccount.
-	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: 'Net Transfer Balance = 90 * pesos' equals: anAccountSummary netTransferReport .! !
-
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:17:50'!
-test01CantDoASummaryOfSomethingThatIsNotAnAccount
-	 |anAccountSummary|
-	anAccountSummary _ AccountReporter for: OrderedCollection new.
-	
-	"self assert: 'No puedo generar este reporte' equals: anAccountSummary accountSummary."
-	self 
-		should: [ anAccountSummary accountSummary ]
-		raise: Error - MessageNotUnderstood 
-		withExceptionDo: [ :anError |
-			self assert: AccountReporter InvalidAccountAssigned equals: anError messageText.
-			]! !
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:17:56'!
-test02AnEmptyAccountHasASummaryWithOnlyBalance
-	| anAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: (OrderedCollection with: 'Balance = 0 * pesos') equals: anAccountSummary accountSummary.! !
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:14:38'!
-test03AUsedAccountSummaryHasItsOnlyWithdraw
-	| anAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	Withdraw register: 100*peso on: anAccount .
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: (OrderedCollection with: 'Extracción por 100 * pesos' with: 'Balance = -100 * pesos') equals: anAccountSummary accountSummary.! !
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:13:50'!
-test04AUsedAccountSummaryHasItsOnlyMadeTransfer
-	| anAccount aSecondAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	aSecondAccount _ ReceptiveAccount new.
-	Transfer amount: 100 * peso from: anAccount to: aSecondAccount.
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: (OrderedCollection with: 'Salida por transferencia de 100 * pesos' with: 'Balance = -100 * pesos') equals: anAccountSummary accountSummary.! !
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:14:00'!
-test05AUsedAccountSummaryHasItsOnlyRecivedTransfer
-	| anAccount aSecondAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	aSecondAccount _ ReceptiveAccount new.
-	Transfer amount: 100 * peso from: anAccount to: aSecondAccount.
-	anAccountSummary _ AccountReporter for: aSecondAccount .
-	
-	self assert: (OrderedCollection with: 'Entrada por transferencia de 100 * pesos' with: 'Balance = 100 * pesos') equals: anAccountSummary accountSummary.! !
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:18:06'!
-test06AUsedAccountSummaryHasItsOnlyDeposit
-	| anAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	Deposit register: 100*peso on: anAccount .
-	anAccountSummary _ AccountReporter for: anAccount.
-	
-	self assert: (OrderedCollection with: 'Depósito por 100 * pesos' with: 'Balance = 100 * pesos') equals: anAccountSummary accountSummary.! !
-
-!ReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:18:16'!
-test07AUsedAccountSummaryIsCorrect
-	| anAccount aSecondAccount anAccountSummary |
-	anAccount _ ReceptiveAccount new.
-	aSecondAccount _ ReceptiveAccount new.
-	Deposit register: 100*peso on: anAccount .
-	Withdraw register: 10*peso on: anAccount .
-	Transfer amount: 10 * peso from: anAccount to: aSecondAccount.
-	Transfer amount: 20 * peso from: aSecondAccount to: anAccount .
-	anAccountSummary _ AccountReporter for: anAccount .
-	
-	self assert: (OrderedCollection with: 'Depósito por 100 * pesos' with: 'Extracción por 10 * pesos' with: 'Salida por transferencia de 10 * pesos' with: 'Entrada por transferencia de 20 * pesos' with: 'Balance = 100 * pesos') equals: anAccountSummary accountSummary.! !
-
-
 !classDefinition: #TransferTest category: 'ServiciosFinancieros-Solucion'!
 TestCase subclass: #TransferTest
 	instanceVariableNames: ''
@@ -588,10 +657,23 @@ addTransactionsTo: aCollectionOfTransactions
 
 	self subclassResponsibility ! !
 
+
+!Account methodsFor: 'reports' stamp: 'ip 11/17/2022 20:37:56'!
+detailedNameWithIndetation: accordingIndentation on: anOrderedCollection
+	self subclassResponsibility .! !
+
+!Account methodsFor: 'reports' stamp: 'ip 11/17/2022 20:38:09'!
+name
+	self subclassResponsibility .! !
+
+!Account methodsFor: 'reports' stamp: 'ip 11/17/2022 20:38:21'!
+nameWithIndetation: accorddingIndentation on: anOrderedCollection
+	self subclassResponsibility .! !
+
 
 !classDefinition: #Portfolio category: 'ServiciosFinancieros-Solucion'!
 Account subclass: #Portfolio
-	instanceVariableNames: 'accounts parents'
+	instanceVariableNames: 'accounts parents portfolioName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
@@ -599,6 +681,12 @@ Account subclass: #Portfolio
 !Portfolio methodsFor: 'initialization' stamp: 'HAW 5/25/2019 12:03:18'!
 initialize
 
+	accounts := OrderedCollection new.
+	parents := OrderedCollection new.! !
+
+!Portfolio methodsFor: 'initialization' stamp: 'ip 11/17/2022 19:47:42'!
+intializeNamed: aName
+	portfolioName := aName .
 	accounts := OrderedCollection new.
 	parents := OrderedCollection new.! !
 
@@ -698,6 +786,27 @@ signalCanNotAddAccount
 	
 	self error: self class canNotAddAccountErrorMessage! !
 
+
+!Portfolio methodsFor: 'reports' stamp: 'ip 11/17/2022 19:34:44'!
+accounts 
+
+	^ accounts copy! !
+
+!Portfolio methodsFor: 'reports' stamp: 'ip 11/17/2022 21:04:04'!
+detailedNameWithIndetation: accorddingIndentation on: anOrderedCollection 
+	anOrderedCollection add: (accorddingIndentation , portfolioName 	).
+	accounts do: [ :anAccount | anAccount detailedNameWithIndetation: (accorddingIndentation ,'#') on: anOrderedCollection ].
+	anOrderedCollection add: accorddingIndentation, '#Balance = ', (self balance asString ).! !
+
+!Portfolio methodsFor: 'reports' stamp: 'ip 11/17/2022 19:47:42'!
+name
+	^portfolioName ! !
+
+!Portfolio methodsFor: 'reports' stamp: 'ip 11/17/2022 19:56:54'!
+nameWithIndetation: accorddingIndentation on: anOrderedCollection 
+	anOrderedCollection add: (accorddingIndentation , portfolioName 	).
+	accounts do: [ :anAccount | anAccount nameWithIndetation: (accorddingIndentation ,'#') on: anOrderedCollection ].! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Solucion'!
@@ -708,6 +817,10 @@ Portfolio class
 canNotAddAccountErrorMessage
 	
 	^'Can not add repeated account to a portfolio'! !
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'ip 11/17/2022 12:51:03'!
+named: aName
+	^((Portfolio new) intializeNamed: aName).! !
 
 !Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:18:21'!
 with: anAccount
@@ -727,7 +840,7 @@ with: anAccount with: anotherAccount
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Solucion'!
 Account subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
+	instanceVariableNames: 'transactions accountName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
@@ -737,6 +850,13 @@ initialize
 
 	super initialize.
 	transactions := OrderedCollection new.! !
+
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'ip 11/17/2022 19:47:30'!
+intializeNamed: aName
+
+	super initialize.
+	transactions := OrderedCollection new.
+	accountName := aName! !
 
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'ip 11/17/2022 10:54:07'!
@@ -780,6 +900,30 @@ isComposedBy: anAccount
 
 	^self = anAccount ! !
 
+
+!ReceptiveAccount methodsFor: 'reports' stamp: 'ip 11/17/2022 20:58:14'!
+detailedNameWithIndetation: accordingIndentation on: anOrderedCollection
+	anOrderedCollection add: (accordingIndentation,accountName).
+	anOrderedCollection addAll: ((AccountReporter for: self) accountSummaryWithIndentation: (accordingIndentation,'#')).! !
+
+!ReceptiveAccount methodsFor: 'reports' stamp: 'ip 11/17/2022 19:47:30'!
+name
+	^accountName ! !
+
+!ReceptiveAccount methodsFor: 'reports' stamp: 'ip 11/17/2022 19:52:21'!
+nameWithIndetation: accordingIndentation on: anOrderedCollection
+	 anOrderedCollection add: (accordingIndentation,accountName).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ReceptiveAccount class' category: 'ServiciosFinancieros-Solucion'!
+ReceptiveAccount class
+	instanceVariableNames: ''!
+
+!ReceptiveAccount class methodsFor: 'as yet unclassified' stamp: 'ip 11/17/2022 12:49:55'!
+named: aName
+	^((ReceptiveAccount new) intializeNamed: aName).! !
+
 
 !classDefinition: #AccountReporter category: 'ServiciosFinancieros-Solucion'!
 Object subclass: #AccountReporter
@@ -800,6 +944,14 @@ accountSummary
 	(associatedAccount isKindOf: Account) ifFalse: [^self error: AccountReporter InvalidAccountAssigned].
 	knownTransactions _ OrderedCollection with: ('Balance = ', associatedAccount balance asString ).
 	(associatedAccount transactions) reverseDo: [ :aTransaction | knownTransactions addFirst: ( aTransaction reportDescription , aTransaction value asString)]  .
+	^knownTransactions .! !
+
+!AccountReporter methodsFor: 'main protocol' stamp: 'ip 11/17/2022 21:00:37'!
+accountSummaryWithIndentation: accordingIndentation
+	|knownTransactions|
+	(associatedAccount isKindOf: Account) ifFalse: [^self error: AccountReporter InvalidAccountAssigned].
+	knownTransactions _ OrderedCollection with: (accordingIndentation ,'Balance = ', associatedAccount balance asString ).
+	(associatedAccount transactions) reverseDo: [ :aTransaction | knownTransactions addFirst: ( accordingIndentation , aTransaction reportDescription , aTransaction value asString)] .
 	^knownTransactions .! !
 
 !AccountReporter methodsFor: 'main protocol' stamp: 'ip 11/17/2022 12:33:08'!
@@ -1054,6 +1206,53 @@ register: aValue on: account
 	account register: transaction.
 		
 	^ transaction! !
+
+
+!classDefinition: #PortfolioReporter category: 'ServiciosFinancieros-Solucion'!
+Object subclass: #PortfolioReporter
+	instanceVariableNames: 'associatedPortfolio'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
+
+!PortfolioReporter methodsFor: 'initialization' stamp: 'ip 11/17/2022 19:15:54'!
+initializeFor: aPortfolio
+
+	associatedPortfolio := aPortfolio .! !
+
+
+!PortfolioReporter methodsFor: 'main protocol' stamp: 'ip 11/17/2022 20:49:50'!
+detailedTreePrinter
+	|resultingCollection |
+	resultingCollection _ OrderedCollection with: associatedPortfolio name.
+	associatedPortfolio accounts do: [ :anAccount | anAccount detailedNameWithIndetation: ('#') on: resultingCollection ].
+	resultingCollection add: '#Balance = ', (associatedPortfolio balance asString ).
+	^resultingCollection .
+	! !
+
+!PortfolioReporter methodsFor: 'main protocol' stamp: 'ip 11/17/2022 20:18:17'!
+treePrinter
+ 	|resultingCollection |
+	resultingCollection _ OrderedCollection with: associatedPortfolio name.
+	associatedPortfolio accounts do: [ :anAccount | anAccount nameWithIndetation: ('#') on: resultingCollection ].
+	^resultingCollection .
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PortfolioReporter class' category: 'ServiciosFinancieros-Solucion'!
+PortfolioReporter class
+	instanceVariableNames: ''!
+
+!PortfolioReporter class methodsFor: 'instance creation' stamp: 'ip 11/17/2022 19:14:55'!
+for: aPortfolio
+	^self new initializeFor: aPortfolio ! !
+
+
+!PortfolioReporter class methodsFor: 'as yet unclassified' stamp: 'ip 11/17/2022 19:24:47'!
+indentation
+	"Para simbolizar la indentacion vamos a usar un # por cada indentacion"
+	^'#'! !
 
 
 !classDefinition: #Transfer category: 'ServiciosFinancieros-Solucion'!
