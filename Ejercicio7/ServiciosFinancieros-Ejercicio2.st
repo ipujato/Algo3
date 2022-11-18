@@ -1,16 +1,14 @@
-!classDefinition: #AccountReportTest category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #AccountReportTest category: 'ServiciosFinancieros-Ejercicio2'!
 TestCase subclass: #AccountReportTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
-!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/17/2022 12:17:50'!
+!AccountReportTest methodsFor: 'account summary test' stamp: 'ip 11/18/2022 15:22:25'!
 test01CantDoASummaryOfSomethingThatIsNotAnAccount
-	 |anAccountSummary|
+	|anAccountSummary|
 	anAccountSummary _ AccountReporter for: OrderedCollection new.
-	
-	"self assert: 'No puedo generar este reporte' equals: anAccountSummary accountSummary."
 	self 
 		should: [ anAccountSummary accountSummary ]
 		raise: Error - MessageNotUnderstood 
@@ -139,27 +137,39 @@ test13NetReportIsCorrectForMultipleTransferAccount
 	self assert: 'Net Transfer Balance = 90 * pesos' equals: anAccountSummary netTransferReport .! !
 
 
-!classDefinition: #PortfolioReporterTest category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #PortfolioReporterTest category: 'ServiciosFinancieros-Ejercicio2'!
 TestCase subclass: #PortfolioReporterTest
 	instanceVariableNames: 'associatedAccount'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
-!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:18:24'!
-test01AnIndividualPortfolioPrintsItsName
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/18/2022 15:27:27'!
+test01CantDoAReportForAnInvalidObject
+	"self assert: (OrderedCollection with: 'Portfolio de la familia') equals: ((PortfolioReporter for: OrderedCollection new) treePrinter).
+	"|aPortafolioReporter|
+	aPortafolioReporter _ PortfolioReporter for: OrderedCollection new.
+	self 
+		should: [ aPortafolioReporter treePrinter ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: PortfolioReporter InvalidPortfolioAssigned equals: anError messageText.
+			]! !
+
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/18/2022 15:21:40'!
+test02AnIndividualPortfolioPrintsItsName
 	self assert: (OrderedCollection with: 'Portfolio de la familia') equals: ((PortfolioReporter for: (Portfolio named: 'Portfolio de la familia')) treePrinter).! !
 
-!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:18:30'!
-test02AnIndividualPortfolioPrintsItsSonIndented
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/18/2022 15:21:47'!
+test03AnIndividualPortfolioPrintsItsSonIndented
 	| account portfolio |
 	portfolio _ Portfolio named: 'Portfolio de la familia'.
 	account _ ReceptiveAccount named: 'Cuenta mia'.
 	portfolio add: account . 
 	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Cuenta mia') equals: ((PortfolioReporter for: portfolio) treePrinter).! !
 
-!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:18:35'!
-test03ADoubleComposedPortfolioHasDoubleIndetation
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/18/2022 15:21:56'!
+test04ADoubleComposedPortfolioHasDoubleIndetation
 	| account portfolio portfolio2 |
 	portfolio _ Portfolio named: 'Portfolio de la familia'.
 	portfolio2 _ Portfolio named: 'Portfolio de hijo'.
@@ -168,8 +178,8 @@ test03ADoubleComposedPortfolioHasDoubleIndetation
 	portfolio2 add: account . 
 	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Portfolio de hijo' with: '##Cuenta de Juan') equals: ((PortfolioReporter for: portfolio) treePrinter).! !
 
-!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/17/2022 20:19:25'!
-test04DoubleComposedWithDoubleAccountPrintsCorrectly
+!PortfolioReporterTest methodsFor: 'tree printer test' stamp: 'ip 11/18/2022 15:22:03'!
+test05DoubleComposedWithDoubleAccountPrintsCorrectly
 	| portfolio portfolio2 expectedCollection |
 	portfolio _ Portfolio named: 'Portfolio de la familia'.
 	portfolio2 _ Portfolio named: 'Portfolio de hijos'.
@@ -181,12 +191,23 @@ test04DoubleComposedWithDoubleAccountPrintsCorrectly
 	self assert: expectedCollection equals: (PortfolioReporter for: portfolio) treePrinter.! !
 
 
-!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/17/2022 20:47:56'!
-test05AnIndividualPortfolioPrintsItsNameWithBalance
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/18/2022 15:27:03'!
+test06CantDoADetiledReportOnAInvalidClass
+	|aPortafolioReporter|
+	aPortafolioReporter _ PortfolioReporter for: OrderedCollection new.
+	self 
+		should: [ aPortafolioReporter detailedTreePrinter ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: PortfolioReporter InvalidPortfolioAssigned equals: anError messageText.
+			]! !
+
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/18/2022 15:27:43'!
+test07AnIndividualPortfolioPrintsItsNameWithBalance
 	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Balance = 0 * pesos') equals: ((PortfolioReporter for: (Portfolio named: 'Portfolio de la familia')) detailedTreePrinter).! !
 
-!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/17/2022 20:48:08'!
-test06AnIndividualPortfolioPrintsItsSonIndentedWithBothBalances
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/18/2022 15:27:56'!
+test08AnIndividualPortfolioPrintsItsSonIndentedWithBothBalances
 	| account portfolio |
 	portfolio _ Portfolio named: 'Portfolio de la familia'.
 	account _ ReceptiveAccount named: 'Cuenta mia'.
@@ -194,8 +215,8 @@ test06AnIndividualPortfolioPrintsItsSonIndentedWithBothBalances
 	portfolio add: account . 
 	self assert: (OrderedCollection with: 'Portfolio de la familia' with: '#Cuenta mia' with: '##Depósito por 10 * pesos' with: '##Balance = 10 * pesos' with: '#Balance = 10 * pesos') equals: ((PortfolioReporter for: portfolio) detailedTreePrinter).! !
 
-!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/17/2022 20:52:41'!
-test07ADoubleComposedPortfolioHasDoubleIdentationAndBalance
+!PortfolioReporterTest methodsFor: 'detailed tree printer test' stamp: 'ip 11/18/2022 15:35:25'!
+test09ADoubleComposedPortfolioHasDoubleIdentationAndBalance
 	| account portfolio portfolio2 expectedResult |
 	portfolio _ Portfolio named: 'Portfolio de la familia'.
 	portfolio2 _ Portfolio named: 'Portfolio de hijo'.
@@ -208,12 +229,12 @@ test07ADoubleComposedPortfolioHasDoubleIdentationAndBalance
 	self assert: expectedResult equals: ((PortfolioReporter for: portfolio) detailedTreePrinter).! !
 
 
-!classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio2'!
 TestCase subclass: #PortfolioTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:16:26'!
 test01BalanceOfPortfolioWithoutAccountsIsZero
@@ -423,12 +444,12 @@ test15PortfolioCanNotIncludeAnyOfTheComposedAccountOfPortfolioToAdd
 			self assert: portfolioToModify accountsIsEmpty ]! !
 
 
-!classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio2'!
 TestCase subclass: #ReceptiveAccountTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:43'!
 test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
@@ -514,12 +535,12 @@ test07AccountKnowsItsTransactions
 ! !
 
 
-!classDefinition: #TransferTest category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #TransferTest category: 'ServiciosFinancieros-Ejercicio2'!
 TestCase subclass: #TransferTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !TransferTest methodsFor: 'as yet unclassified' stamp: 'LL 9/20/2020 21:07:03'!
 test01ATransferDecreasesBalanceFromOriginAccountAndIncreasesItForDestinationAccount
@@ -618,12 +639,12 @@ test06CannotTransferAZeroAmount
 ! !
 
 
-!classDefinition: #Account category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #Account category: 'ServiciosFinancieros-Ejercicio2'!
 Object subclass: #Account
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !Account methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 12:23:40'!
 balance
@@ -671,12 +692,12 @@ nameWithIndetation: accorddingIndentation on: anOrderedCollection
 	self subclassResponsibility .! !
 
 
-!classDefinition: #Portfolio category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio2'!
 Account subclass: #Portfolio
 	instanceVariableNames: 'accounts parents portfolioName'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !Portfolio methodsFor: 'initialization' stamp: 'HAW 5/25/2019 12:03:18'!
 initialize
@@ -809,7 +830,7 @@ nameWithIndetation: accorddingIndentation on: anOrderedCollection
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio2'!
 Portfolio class
 	instanceVariableNames: ''!
 
@@ -838,12 +859,12 @@ with: anAccount with: anotherAccount
 		yourself! !
 
 
-!classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio2'!
 Account subclass: #ReceptiveAccount
 	instanceVariableNames: 'transactions accountName'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !ReceptiveAccount methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:35'!
 initialize
@@ -916,7 +937,7 @@ nameWithIndetation: accordingIndentation on: anOrderedCollection
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ReceptiveAccount class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'ReceptiveAccount class' category: 'ServiciosFinancieros-Ejercicio2'!
 ReceptiveAccount class
 	instanceVariableNames: ''!
 
@@ -925,12 +946,12 @@ named: aName
 	^((ReceptiveAccount new) intializeNamed: aName).! !
 
 
-!classDefinition: #AccountReporter category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #AccountReporter category: 'ServiciosFinancieros-Ejercicio2'!
 Object subclass: #AccountReporter
 	instanceVariableNames: 'associatedAccount'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !AccountReporter methodsFor: 'instance creation' stamp: 'ip 11/15/2022 21:04:20'!
 initializeFor: aReceptiveAccount 
@@ -963,7 +984,7 @@ netTransferReport
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'AccountReporter class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'AccountReporter class' category: 'ServiciosFinancieros-Ejercicio2'!
 AccountReporter class
 	instanceVariableNames: ''!
 
@@ -977,12 +998,12 @@ InvalidAccountAssigned
 	^'No puedo generar este reporte'! !
 
 
-!classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio2'!
 Object subclass: #AccountTransaction
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
 value 
@@ -1005,12 +1026,12 @@ affectBalance: aBalance
 	self subclassResponsibility ! !
 
 
-!classDefinition: #Deposit category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #Deposit category: 'ServiciosFinancieros-Ejercicio2'!
 AccountTransaction subclass: #Deposit
 	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !Deposit methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:45'!
 initializeFor: aValue
@@ -1040,7 +1061,7 @@ transferBalanceValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Deposit class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'Deposit class' category: 'ServiciosFinancieros-Ejercicio2'!
 Deposit class
 	instanceVariableNames: ''!
 
@@ -1061,12 +1082,12 @@ register: aValue on: account
 	^ transaction! !
 
 
-!classDefinition: #TransferLeg category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #TransferLeg category: 'ServiciosFinancieros-Ejercicio2'!
 AccountTransaction subclass: #TransferLeg
 	instanceVariableNames: 'transfer'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !TransferLeg methodsFor: 'value' stamp: 'LL 9/20/2020 22:27:32'!
 value
@@ -1081,7 +1102,7 @@ initializeWith: aTransfer
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TransferLeg class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'TransferLeg class' category: 'ServiciosFinancieros-Ejercicio2'!
 TransferLeg class
 	instanceVariableNames: ''!
 
@@ -1096,12 +1117,12 @@ of: aTransfer on: anAccount
 	^transaction! !
 
 
-!classDefinition: #TransferDepositLeg category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #TransferDepositLeg category: 'ServiciosFinancieros-Ejercicio2'!
 TransferLeg subclass: #TransferDepositLeg
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !TransferDepositLeg methodsFor: 'accessing' stamp: 'LL 9/20/2020 22:26:10'!
 withdrawLeg
@@ -1124,12 +1145,12 @@ transferBalanceValue
 	^self value! !
 
 
-!classDefinition: #TransferWithdrawLeg category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #TransferWithdrawLeg category: 'ServiciosFinancieros-Ejercicio2'!
 TransferLeg subclass: #TransferWithdrawLeg
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !TransferWithdrawLeg methodsFor: 'accessing' stamp: 'LL 9/20/2020 22:25:47'!
 depositLeg
@@ -1152,12 +1173,12 @@ transferBalanceValue
 	^self value negated! !
 
 
-!classDefinition: #Withdraw category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio2'!
 AccountTransaction subclass: #Withdraw
 	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
 initializeFor: aValue
@@ -1187,7 +1208,7 @@ transferBalanceValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Withdraw class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'Withdraw class' category: 'ServiciosFinancieros-Ejercicio2'!
 Withdraw class
 	instanceVariableNames: ''!
 
@@ -1208,12 +1229,12 @@ register: aValue on: account
 	^ transaction! !
 
 
-!classDefinition: #PortfolioReporter category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #PortfolioReporter category: 'ServiciosFinancieros-Ejercicio2'!
 Object subclass: #PortfolioReporter
 	instanceVariableNames: 'associatedPortfolio'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !PortfolioReporter methodsFor: 'initialization' stamp: 'ip 11/17/2022 19:15:54'!
 initializeFor: aPortfolio
@@ -1221,18 +1242,20 @@ initializeFor: aPortfolio
 	associatedPortfolio := aPortfolio .! !
 
 
-!PortfolioReporter methodsFor: 'main protocol' stamp: 'ip 11/17/2022 20:49:50'!
+!PortfolioReporter methodsFor: 'main protocol' stamp: 'ip 11/18/2022 15:26:08'!
 detailedTreePrinter
 	|resultingCollection |
+	(associatedPortfolio isKindOf: Portfolio ) ifFalse: [^self error: PortfolioReporter InvalidPortfolioAssigned ].
 	resultingCollection _ OrderedCollection with: associatedPortfolio name.
 	associatedPortfolio accounts do: [ :anAccount | anAccount detailedNameWithIndetation: ('#') on: resultingCollection ].
 	resultingCollection add: '#Balance = ', (associatedPortfolio balance asString ).
 	^resultingCollection .
 	! !
 
-!PortfolioReporter methodsFor: 'main protocol' stamp: 'ip 11/17/2022 20:18:17'!
+!PortfolioReporter methodsFor: 'main protocol' stamp: 'ip 11/18/2022 15:25:57'!
 treePrinter
  	|resultingCollection |
+	(associatedPortfolio isKindOf: Portfolio ) ifFalse: [^self error: PortfolioReporter InvalidPortfolioAssigned ].
 	resultingCollection _ OrderedCollection with: associatedPortfolio name.
 	associatedPortfolio accounts do: [ :anAccount | anAccount nameWithIndetation: ('#') on: resultingCollection ].
 	^resultingCollection .
@@ -1240,7 +1263,7 @@ treePrinter
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortfolioReporter class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'PortfolioReporter class' category: 'ServiciosFinancieros-Ejercicio2'!
 PortfolioReporter class
 	instanceVariableNames: ''!
 
@@ -1249,18 +1272,22 @@ for: aPortfolio
 	^self new initializeFor: aPortfolio ! !
 
 
+!PortfolioReporter class methodsFor: 'as yet unclassified' stamp: 'ip 11/18/2022 15:25:38'!
+InvalidPortfolioAssigned
+	^'El objeto recibido no es valido para generar reportes'.! !
+
 !PortfolioReporter class methodsFor: 'as yet unclassified' stamp: 'ip 11/17/2022 19:24:47'!
 indentation
 	"Para simbolizar la indentacion vamos a usar un # por cada indentacion"
 	^'#'! !
 
 
-!classDefinition: #Transfer category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: #Transfer category: 'ServiciosFinancieros-Ejercicio2'!
 Object subclass: #Transfer
 	instanceVariableNames: 'value withdrawLeg depositLeg'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
+	category: 'ServiciosFinancieros-Ejercicio2'!
 
 !Transfer methodsFor: 'value' stamp: 'LL 9/20/2020 21:13:00'!
 value
@@ -1288,7 +1315,7 @@ initializeWith: aValue withdrawLeg: aWithdraw depositLeg: aDeposit
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Transfer class' category: 'ServiciosFinancieros-Solucion'!
+!classDefinition: 'Transfer class' category: 'ServiciosFinancieros-Ejercicio2'!
 Transfer class
 	instanceVariableNames: ''!
 
